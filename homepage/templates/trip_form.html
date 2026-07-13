@@ -1,0 +1,132 @@
+{% extends 'sidebar.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="trip-page">
+
+        <!-- Header -->
+
+        <div class="trip-header">
+            <div>
+                <h2>
+                    <i class="fas fa-route"></i>
+                    Create Trip
+                </h2>
+
+                <p>
+                    Create and organize your travel itinerary.
+                </p>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+
+        <div class="card trip-card shadow-sm">
+
+            <div class="card-body">
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="row g-4">
+
+                    <div class="col-md-6">
+    <label class="form-label">
+        Trip Name
+    </label>
+    <input type="text"
+           name="name"
+           class="form-control"
+           placeholder="Summer Vacation">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">
+        Destination
+    </label>
+    <input type="text"
+           name="destination"
+           class="form-control"
+           placeholder="Paris, France">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">
+        Start Date
+    </label>
+    <input type="date"
+           name="start_date"
+           class="form-control">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">
+        End Date
+    </label>
+    <input type="date"
+           name="end_date"
+           class="form-control">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">
+        Budget
+    </label>
+    <input type="number"
+           name="budget"
+           class="form-control"
+           placeholder="1000">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">
+        Status
+    </label>
+    <select name="status" class="form-control">
+        <option value="">Select Status</option>
+        <option value="planned">Planned</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="completed">Completed</option>
+    </select>
+</div>
+
+<div class="col-12">
+    <label class="form-label">
+        Notes
+    </label>
+    <textarea name="notes"
+              class="form-control"
+              rows="4"
+              placeholder="Add trip notes here..."></textarea>
+</div>
+</div>
+ <div class="mt-4 text-end">
+
+                        <a href="#"
+                           class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Trip
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

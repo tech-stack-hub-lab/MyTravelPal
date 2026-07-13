@@ -1,0 +1,92 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="event-page">
+
+        <!-- Header -->
+        <div class="event-header">
+
+            <div>
+                <h2>
+                    <i class="fas fa-calendar-alt"></i>
+                    Add Event
+                </h2>
+
+                <p>
+                    Manage meetings, tours, activities and travel plans.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Form Card -->
+        <div class="card event-card shadow-sm">
+
+            <div class="card-body">
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Event Title
+                            </label>
+                           <input type="text" class="form-control" name="title" placeholder="London Sightseeing Tour">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Location
+                            </label>
+                            <input type="text" class="form-control" name="location" placeholder="London">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Start Date & Time
+                            </label>
+                            <input type="datetime-local" class="form-control" name="start_datetime">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                End Date & Time
+                            </label>
+                            <input type="datetime-local" class="form-control" name="end_datetime">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">
+                                Description
+                            </label>
+                <textarea class="form-control" name="description" placeholder="Enter event description"></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="text-end mt-4">
+
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Event
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

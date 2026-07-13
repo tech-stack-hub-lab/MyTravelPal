@@ -1,0 +1,41 @@
+{% extends 'sidebar.html' %}
+ 
+{% block content %}
+ 
+<h2>Calendar Events</h2>
+ 
+ <a href="{% url 'homepage:event_create' %}">
+    Add Event
+</a>
+ 
+<hr>
+ 
+    <a href="{% url 'homepage:event_create' %}">
+        Add Event
+    </a>
+ 
+    <a href="{% url 'homepage:event_create' %}">
+        Add Event
+    </a>
+ 
+    {% for event in events %}
+ 
+<div>
+ 
+    <h4>
+        {{ event.title }}
+    </h4>
+ 
+    <p>
+        {{ event.start_datetime }}
+    </p>
+ 
+</div>
+ 
+{% empty %}
+ 
+<p>No events found.</p>
+ 
+{% endfor %}
+ 
+{% endblock %}

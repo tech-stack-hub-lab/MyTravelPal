@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="w-100" style="max-width: 450px;">
+
+        <div class="text-center mb-4">
+            <div class="logo-box mb-3">
+                <i class="fas fa-plane"></i>
+            </div>
+
+            <h1 class="brand-title fw-bold">Create your account</h1>
+
+            <p class="text-secondary">
+                Start managing your trips for free
+            </p>
+        </div>
+
+        <div class="signup-card p-4">
+ 
+ <form method="post" action="{% url 'account_signup' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-gold w-100 py-2">Create account</button>
+  </form>
+  <p class="text-center text-secondary mt-3 mb-0">
+                Already have an account?
+                <a href="{% url 'account_login' %}" class="signup-link fw-semibold">
+                    Log in
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends 'sidebar.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="hotel-page">
+
+        <!-- Header -->
+        <div class="hotel-header">
+            <h2>
+                <i class="fas fa-hotel text-primary"></i>
+                Add Hotel Booking
+            </h2>
+            <p>
+                Store hotel reservations and accommodation details.
+            </p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="card hotel-card shadow-sm">
+
+            <div class="card-body">
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+                            <label class="form-label">Hotel Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="hotel_name"
+                                   placeholder="Hilton Paris">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Booking Reference</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="booking_reference"
+                                   placeholder="HTL123456">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">City</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="city"
+                                   placeholder="Paris">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Country</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="country"
+                                   placeholder="France">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Check-In Date</label>
+                            <input type="date"
+                                   class="form-control"
+                                   name="check_in">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Check-Out Date</label>
+                            <input type="date"
+                                   class="form-control"
+                                   name="check_out">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Guests</label>
+                            <input type="number"
+                                   class="form-control"
+                                   name="guests"
+                                   min="1"
+                                   value="1">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Room Type</label>
+                            <select class="form-control" name="room_type">
+                                <option>Standard Room</option>
+                                <option>Deluxe Room</option>
+                                <option>Suite</option>
+                                <option>Family Room</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Hotel Phone</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="hotel_phone"
+                                   placeholder="+44 123456789">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Hotel Email</label>
+                            <input type="email"
+                                   class="form-control"
+                                   name="hotel_email"
+                                   placeholder="hotel@example.com">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Address</label>
+                            <textarea class="form-control"
+                                      rows="3"
+                                      name="address"
+                                      placeholder="Enter hotel address"></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control"
+                                      rows="4"
+                                      name="notes"
+                                      placeholder="Special requests, breakfast included, etc."></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4 text-end">
+
+                        homepage:dashboard' %}"
+                           class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Hotel Booking
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

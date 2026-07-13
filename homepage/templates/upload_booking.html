@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="page-section">
+  <div class="page-header">
+    <h1>Upload Booking Import</h1>
+    <p>Upload a booking email, PDF text file, or travel confirmation. The app will save the file as a backup and extract structured records.</p>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="form-card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Upload and Extract</button>
+  </form>
+</section>
+{% endblock %}

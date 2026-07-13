@@ -1,0 +1,28 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<section class="page-section">
+  <div class="page-header">
+    <div>
+      <h1>Trips</h1>
+      <p>Manage your itinerary and view all saved trips.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'homepage:trip_create' %}">New Trip</a>
+  </div>
+
+  {% if trips %}
+    <div class="item-grid">
+      {% for trip in trips %}
+        <div class="card">
+          <h3><a href="{% url 'homepage:trip_detail' trip.id %}">{{ trip.trip_name }}</a></h3>
+          <p>{{ trip.destination }}</p>
+          <p>{{ trip.start_date }} → {{ trip.end_date }}</p>
+          <p>Status: {{ trip.get_status_display }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No trips have been created yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

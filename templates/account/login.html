@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="w-100" style="max-width: 450px;">
+
+        <div class="text-center mb-4">
+            <div class="logo-box mb-3">
+                <i class="fas fa-plane"></i>
+            </div>
+
+            <h1 class="brand-title fw-bold">Welcome Back</h1>
+
+            <p class="text-secondary">
+                Sign in to your My Travel Pal account
+            </p>
+        </div>
+
+        <div class="login-card p-4">
+ 
+ <form method="post" action="{% url 'account_login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-gold w-100 py-2">Log in</button>
+  </form>
+  <p class="text-center text-secondary mt-3 mb-0">
+                Don't have an account?
+                <a href="{% url 'account_signup' %}" class="signup-link fw-semibold">
+                    Sign up free
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Chat Button -->
+<button class="chat-btn position-fixed">
+    🤖
+    <span class="chat-badge">2</span>
+</button>
+
+{% endblock %}

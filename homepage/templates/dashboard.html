@@ -1,0 +1,137 @@
+{% extends 'sidebar.html' %}
+{% load static %}
+
+{% block content %}
+ 
+        <!-- Hero -->
+
+        <div class="hero-card">
+          <div>
+          <h2>
+          {% if user.is_premium %}
+          Premium
+          {% else %}
+          Free
+          {% endif %}
+          </h2>
+          <p>
+          {{ trip_count }} upcoming trips •
+          {{ flight_count }} flights booked
+          </p>
+          </div>
+
+          <a href="{% url 'homepage:trip_create' %}" class="btn btn-warning">
+            Add Trip
+          </a>
+        </div>
+
+        <!-- Stats -->
+
+        <section class="stats">
+          <div class="stat-card">
+            <i class="fas fa-plane"></i>
+            <h2>{{ flight_count }}</h2>
+            <p>Flights</p>
+          </div>
+
+          <div class="stat-card">
+            <i class="fas fa-hotel"></i>
+            <h2>{{ hotel_count }}</h2>
+            <p>Hotels</p>
+          </div>
+
+          <div class="stat-card">
+            <i class="fas fa-map-marker-alt"></i>
+            <h2>{{ trip_count }}</h2>
+            <p>Trips</p>
+          </div>
+
+          <div class="stat-card">
+            <i class="fas fa-star"></i>
+            <h2>
+              {% if user.is_premium %}
+              Premium
+              {% else %}
+              Free
+              {% endif %}
+            </h2>
+            <p>Membership</p>
+          </div>
+        </section>
+
+        <div class="main-grid">
+          <!-- Trips -->
+
+        <div class="left">
+
+              <h2>Upcoming Trips</h2>
+
+              {% for trip in upcoming_trips %}
+
+              <div class="trip-card">
+
+                  <div class="trip-left">
+
+                      <div class="trip-icon">
+                          <i class="fas fa-globe"></i>
+                      </div>
+
+                      <div>
+                          <h3>{{ trip.destination }}</h3>
+
+                          <p>
+                              {{ trip.start_date }}
+                              -
+                              {{ trip.end_date }}
+                          </p>
+                      </div>
+
+                  </div>
+
+                  <span class="badge success">
+                      Active
+                  </span>
+
+              </div>
+
+              {% empty %}
+
+              <div class="alert alert-light">
+                  No trips created yet.
+              </div>
+
+              {% endfor %}
+
+          </div>
+
+          <!-- Right -->
+
+          <div class="right">
+            <div class="glass-card">
+              <h3>Travel Progress</h3>
+
+              <div class="progress-circle">
+                <span>{{ progress }}%</span>
+              </div>
+            </div>
+
+            <div class="glass-card">
+
+    <h3>Quick Actions</h3>
+
+    <a href="{% url 'homepage:flight_create' %}" class="action-btn form-control text-center">
+        Add Flight
+    </a>
+
+    <a href="{% url 'homepage:hotel_create' %}" class="action-btn form-control text-center">
+        Add Hotel
+    </a>
+
+    <a href="{% url 'homepage:event_create' %}" class="action-btn form-control text-center">
+        Add Event
+    </a>
+
+</div>
+          </div>
+        </div>
+        {% endblock %}

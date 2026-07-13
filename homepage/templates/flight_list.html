@@ -1,0 +1,40 @@
+{% extends 'sidebar.html' %}
+ 
+{% block content %}
+ 
+<h2>Flights</h2>
+ 
+<a href="{% url 'homepage:flight_create' %}">
+    Add Flight
+</a>
+ 
+<hr>
+ 
+    <a href="{% url 'homepage:flight_create' %}">
+        Add Flight
+    </a>
+ 
+    {% for flight in flights %}
+ 
+<div>
+ 
+    <h4>
+        {{ flight.airline }}
+        {{ flight.flight_number }}
+    </h4>
+ 
+    <p>
+        {{ flight.departure_airport }}
+        →
+        {{ flight.arrival_airport }}
+    </p>
+ 
+</div>
+ 
+{% empty %}
+ 
+<p>No flights found.</p>
+ 
+{% endfor %}
+ 
+{% endblock %}

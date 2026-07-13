@@ -1,0 +1,164 @@
+{% extends 'sidebar.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="flight-page">
+
+        <!-- Header -->
+
+        <div class="flight-header">
+            <div>
+                <h2>
+                    <i class="fas fa-plane-departure"></i>
+                    Add Flight Booking
+                </h2>
+
+                <p>
+                    Save your flight details and keep all bookings organized.
+                </p>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+
+        <div class="card flight-card shadow-sm">
+
+            <div class="card-body">
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="row g-4">
+                    <div class="col-md-6">
+                            <label class="form-label">
+                                Trip
+                            </label>
+                            {{ form.trip }}
+                    </div>
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Airline
+                            </label>
+                            <input type="text"
+                                   name="airline"
+                                   class="form-control"
+                                   placeholder="British Airways">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Flight Number
+                            </label>
+                            <input type="text"
+                                   name="flight_number"
+                                   class="form-control"
+                                   placeholder="BA208">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Departure Airport
+                            </label>
+                            <input type="text"
+                                   name="departure_airport"
+                                   class="form-control"
+                                   placeholder="London Heathrow">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Arrival Airport
+                            </label>
+                            <input type="text"
+                                   name="arrival_airport"
+                                   class="form-control"
+                                   placeholder="Paris Charles de Gaulle">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Departure Date
+                            </label>
+                            <input type="date"
+                                   name="departure_date"
+                                   class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Arrival Date
+                            </label>
+                            <input type="date"
+                                   name="arrival_date"
+                                   class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Departure Time
+                            </label>
+                            <input type="time"
+                                   name="departure_time"
+                                   class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Arrival Time
+                            </label>
+                            <input type="time"
+                                   name="arrival_time"
+                                   class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Booking Reference
+                            </label>
+                            <input type="text"
+                                   name="booking_reference"
+                                   class="form-control"
+                                   placeholder="ABC123">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Seat Number
+                            </label>
+                            <input type="text"
+                                   name="seat_number"
+                                   class="form-control"
+                                   placeholder="12A">
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4 text-end">
+
+                        btn btn-outline-secondary">
+                            Cancel
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Flight
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

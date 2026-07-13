@@ -1,0 +1,84 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<section class="page-section">
+  <div class="page-header">
+    <div>
+      <h1>{{ trip.trip_name }}</h1>
+      <p>{{ trip.destination }} | {{ trip.start_date }} – {{ trip.end_date }}</p>
+    </div>
+  </div>
+
+  <div class="details-grid">
+    <div class="card">
+      <h2>Flights</h2>
+      {% if trip.flights.exists %}
+        <ul>
+          {% for flight in trip.flights.all %}
+            <li>{{ flight.airline }} {{ flight.flight_number }} from {{ flight.departure_airport }} to {{ flight.arrival_airport }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No flights added yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h2>Hotels</h2>
+      {% if trip.hotels.exists %}
+        <ul>
+          {% for hotel in trip.hotels.all %}
+            <li>{{ hotel.hotel_name }} in {{ hotel.location }} ({{ hotel.checkin_date }} − {{ hotel.checkout_date }})</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No hotel bookings yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h2>Calendar events</h2>
+      {% if trip.events.exists %}
+        <ul>
+          {% for event in trip.events.all %}
+            <li>{{ event.title }} | {{ event.start_datetime }} → {{ event.end_datetime }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No calendar events yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Uploads attached to this trip</h2>
+    {% if uploads %}
+      <ul class="item-list">
+        {% for upload in uploads %}
+          <li>
+            <strong>{{ upload.file.name }}</strong>
+            <span>{{ upload.get_import_status_display }} · {{ upload.created_at|date:'Y-m-d' }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No uploaded files for this trip yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Itinerary & Map</h2>
+    <p>View the itinerary and map for <strong>{{ trip.destination }}</strong>.</p>
+    <div class="itinerary-embed">
+      <iframe
+        width="100%"
+        height="350"
+        frameborder="0"
+        style="border:0;"
+        src="https://www.google.com/maps?q={{ trip.destination|urlencode }}&output=embed"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</section>
+{% endblock %}

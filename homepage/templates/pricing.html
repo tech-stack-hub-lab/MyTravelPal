@@ -1,0 +1,43 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+
+<!-- templates/home.html -->
+<h1>Homepage</h1>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Purchase!</button>
+</form>
+
+<section class="page-section">
+  <div class="page-header">
+    <h1>Pricing</h1>
+    <p>Choose a plan to unlock Premium features like priority itinerary building and advanced searches.</p>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <h3>Free</h3>
+      <p>Basic trip tracking, uploads and calendar events.</p>
+      <p class="price">Free</p>
+      <form method="post" action="{% url 'homepage:pricing_checkout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="price_id" value="0">
+        <button class="btn btn-secondary" disabled>Current Plan</button>
+      </form>
+    </div>
+
+    <div class="pricing-card">
+      <h3>Premium</h3>
+      <p>Priority itinerary generation, chat assistant, and advanced trip insights.</p>
+      <p class="price">$5 / month</p>
+      <form method="post" action="{% url 'homepage:pricing_checkout' %}" class="checkout-form">
+        {% csrf_token %}
+        <input type="hidden" name="price_id" value="{{ stripe_price_id|default:'500' }}">
+        <button class="btn btn-primary">Upgrade to Premium</button>
+      </form>
+    </div>
+  </div>
+
+</section>
+{% endblock %}

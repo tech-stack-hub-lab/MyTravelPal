@@ -1,0 +1,1788 @@
+from django.shortcuts import render
+from PyPDF2 import PdfReader
+import docx
+
+def extract_text(file):
+    ext = file.name.split(".")[-1].lower()
+
+    if ext == "pdf":
+        reader = PdfReader(file)
+        return "\n".join(page.extract_text() or "" for page in reader.pages)
+
+    elif ext == "docx":
+        doc = docx.Document(file)
+        return "\n".join(p.text for p in doc.paragraphs)
+
+    elif ext == "txt":
+        return file.read().decode("utf-8")
+
+    return ""
+
+
+
+  {% block content %}
+<section class="page-section">
+  {% if user.is_authenticated and not user.is_premium %}
+  <div class="card">
+    <h3>Upgrade to Premium</h3>
+    <p>Upgrade to unlock priority itinerary generation, advanced chat and insights.</p>
+    <p><a class="btn btn-primary" href="{% url 'homepage:pricing' %}">See Pricing</a></p>
+  </div>
+  {% endif %}
+  <div class="dashboard-grid">
+    <div class="dashboard-panel">
+      <h2>Trips</h2>
+      {% if trips %}
+        <ul class="item-list">
+          {% for trip in trips %}
+            <li>
+              <a href="{% url 'homepage:trip_detail' trip.id %}">{{ trip.trip_name }}</a>
+              <span>{{ trip.destination }} · {{ trip.start_date }} to {{ trip.end_date }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No trips yet. <a href="{% url 'homepage:trip_create' %}">Create one</a>.</p>
+      {% endif %}
+    </div>
+
+    <div class="dashboard-panel">
+      <h2>Recent uploads</h2>
+      {% if uploads %}
+        <ul class="item-list">
+          {% for upload in uploads %}
+            <li>
+              <strong>{{ upload.file.name }}</strong>
+              <span>{{ upload.get_import_status_display }} · {{ upload.created_at|date:'Y-m-d' }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No imported files yet.</p>
+      {% endif %}
+      <p><a href="{% url 'homepage:upload_booking' %}">Upload booking file</a></p>
+    </div>
+  </div>
+</section>
+<div class="layout">
+    {% endblock %}
+
+
+
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Dashboard</title>
+
+    3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background: #212529;
+        }
+
+        .sidebar .nav-link {
+            color: #adb5bd;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: #fff;
+            background: #343a40;
+            border-radius: 5px;
+        }
+
+        .content {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <div class="col-md-2 sidebar p-3">
+            <h4 class="text-white mb-4">Dashboard</h4>
+
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    # active">Home</a>
+                </li>
+                <li class="nav-item mb-2">
+                    #
+                </li>
+                <li class="nav-item mb-2">
+                    #
+                </li>
+                <li class="nav-item mb-2">
+                    #
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10 p-0">
+
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-3">
+                <div class="container-fluid">
+                    #Admin Panel</a>
+
+                    <button class="navbar-toggler" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                #Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                # class="nav-link">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="content p-4">
+
+                <h2 class="mb-4">Dashboard Overview</h2>
+
+                <!-- Grid -->
+                <div class="row g-4">
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>Total Users</h5>
+                                <h2>1,250</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>Revenue</h5>
+                                <h2>$8,420</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>Orders</h5>
+                                <h2>320</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>Products</h5>
+                                <h2>85</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Additional Grid Section -->
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>Recent Activity</h5>
+                                <p>Your content goes here...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5>Statistics</h5>
+                                <p>Your stats go here...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        Travel AI Assistant
+    </title>
+</head>
+
+<body>
+
+<h1>Travel AI Assistant</h1>
+
+<h2>Upload File</h2>
+
+<form
+method="POST"
+enctype="multipart/form-data"
+>
+
+{% csrf_token %}
+
+{{ upload_form }}
+
+<button type="submit">
+Upload
+</button>
+
+</form>
+
+<hr>
+
+<h2>AI Chat</h2>
+
+<form method="POST">
+
+{% csrf_token %}
+
+{{ chat_form }}
+
+<button type="submit">
+Ask
+</button>
+
+</form>
+
+<hr>
+
+<h2>Extracted Text</h2>
+
+<pre>
+{{ text }}
+</pre>
+
+<hr>
+
+<h2>Response</h2>
+
+<pre>
+{{ answer }}
+</pre>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+You said:
+show all codes here like 
+trip
+flight 
+hotel 
+calender
+these with some styling
+dashboard - not require designing
+Copilot said:
+Copilot
+Based on your existing models, here's a complete structure for:
+
+Trip Management
+Flight Management
+Hotel Management
+Calendar Events
+Dashboard Integration
+No extra design, just working Django code.
+
+forms.py
+
+
+
+Python
+from django import forms
+from .models import (
+    Trip,
+    Flight,
+    HotelBooking,
+    CalendarEvent
+)
+ 
+ 
+class TripForm(forms.ModelForm):
+ 
+    class Meta:
+        model = Trip
+        fields = [
+            "trip_name",
+            "destination",
+            "start_date",
+            "end_date",
+            "status"
+        ]
+ 
+ 
+class FlightForm(forms.ModelForm):
+ 
+    class Meta:
+        model = Flight
+        fields = "__all__"
+ 
+ 
+class HotelBookingForm(forms.ModelForm):
+ 
+    class Meta:
+        model = HotelBooking
+        fields = "__all__"
+ 
+ 
+class CalendarEventForm(forms.ModelForm):
+ 
+    class Meta:
+        model = CalendarEvent
+        fields = "__all__"
+
+Show less
+views.py
+Import:
+
+
+
+
+Python
+from .forms import (
+    TripForm,
+    FlightForm,
+    HotelBookingForm,
+    CalendarEventForm
+)
+ 
+from .models import (
+    Trip,
+    Flight,
+    HotelBooking,
+    CalendarEvent
+)
+Dashboard
+
+
+
+Python
+from django.utils import timezone
+ 
+@login_required
+def dashboard(request):
+ 
+    trips = Trip.objects.filter(user=request.user)
+ 
+    flights = Flight.objects.filter(
+        trip__user=request.user
+    )
+ 
+    hotels = HotelBooking.objects.filter(
+        trip__user=request.user
+    )
+ 
+    events = CalendarEvent.objects.filter(
+        trip__user=request.user
+    )
+ 
+    upcoming_trips = trips.filter(
+        start_date__gte=timezone.now().date()
+    )
+ 
+    context = {
+        "trip_count": trips.count(),
+        "flight_count": flights.count(),
+        "hotel_count": hotels.count(),
+        "event_count": events.count(),
+        "upcoming_trips": upcoming_trips[:5],
+    }
+ 
+    return render(
+        request,
+        "dashboard.html",
+        context
+    )
+
+Show more lines
+Trip Views
+
+
+
+Python
+@login_required
+def trip_list(request):
+ 
+    trips = Trip.objects.filter(
+        user=request.user
+    )
+ 
+    return render(
+        request,
+        "trip_list.html",
+        {"trips": trips}
+    )
+ 
+ 
+@login_required
+def trip_create(request):
+ 
+    form = TripForm(
+        request.POST or None
+    )
+ 
+    if request.method == "POST":
+ 
+        if form.is_valid():
+ 
+            trip = form.save(
+                commit=False
+            )
+ 
+            trip.user = request.user
+ 
+            trip.save()
+ 
+            return redirect(
+                "homepage:trip_detail",
+                trip.id
+            )
+ 
+    return render(
+        request,
+        "trip_form.html",
+        {"form": form}
+    )
+ 
+ 
+@login_required
+def trip_detail(
+    request,
+    trip_id
+):
+ 
+    trip = get_object_or_404(
+        Trip,
+        id=trip_id,
+        user=request.user
+    )
+ 
+    return render(
+        request,
+        "trip_detail.html",
+        {"trip": trip}
+    )
+
+Show more lines
+Flight Views
+
+
+
+Python
+@login_required
+def flight_list(request):
+ 
+    flights = Flight.objects.filter(
+        trip__user=request.user
+    )
+ 
+    return render(
+        request,
+        "flight_list.html",
+        {
+            "flights": flights
+        }
+    )
+ 
+ 
+@login_required
+def flight_create(request):
+ 
+    form = FlightForm(
+        request.POST or None
+    )
+ 
+    if request.method == "POST":
+ 
+        if form.is_valid():
+ 
+            form.save()
+ 
+            return redirect(
+                "homepage:flight_list"
+            )
+ 
+    return render(
+        request,
+        "flight_form.html",
+        {
+            "form": form
+        }
+    )
+
+Show more lines
+Hotel Views
+
+
+
+Python
+@login_required
+def hotel_list(request):
+ 
+    hotels = HotelBooking.objects.filter(
+        trip__user=request.user
+    )
+ 
+    return render(
+        request,
+        "hotel_list.html",
+        {
+            "hotels": hotels
+        }
+    )
+ 
+ 
+@login_required
+def hotel_create(request):
+ 
+    form = HotelBookingForm(
+        request.POST or None
+    )
+ 
+    if request.method == "POST":
+ 
+        if form.is_valid():
+ 
+            form.save()
+ 
+            return redirect(
+                "homepage:hotel_list"
+            )
+ 
+    return render(
+        request,
+        "hotel_form.html",
+        {
+            "form": form
+        }
+    )
+
+Show more lines
+Calendar Event Views
+
+
+
+Python
+@login_required
+def event_list(request):
+ 
+    events = CalendarEvent.objects.filter(
+        trip__user=request.user
+    )
+ 
+    return render(
+        request,
+        "event_list.html",
+        {
+            "events": events
+        }
+    )
+ 
+ 
+@login_required
+def event_create(request):
+ 
+    form = CalendarEventForm(
+        request.POST or None
+    )
+ 
+    if request.method == "POST":
+ 
+        if form.is_valid():
+ 
+            form.save()
+ 
+            return redirect(
+                "homepage:event_list"
+            )
+ 
+    return render(
+        request,
+        "event_form.html",
+        {
+            "form": form
+        }
+    )
+
+Show more lines
+Calendar API
+
+
+
+Python
+from django.http import JsonResponse
+ 
+@login_required
+def calendar_events(request):
+ 
+    events = CalendarEvent.objects.filter(
+        trip__user=request.user
+    )
+ 
+    data = []
+ 
+    for event in events:
+ 
+        data.append({
+            "title": event.title,
+            "start": event.start_datetime.isoformat(),
+            "end": event.end_datetime.isoformat(),
+            "color": event.color_code,
+        })
+ 
+    return JsonResponse(
+        data,
+        safe=False
+    )
+
+Show more lines
+urls.py
+Add:
+
+
+
+
+Python
+path(
+    "flights/",
+    views.flight_list,
+    name="flight_list"
+),
+ 
+path(
+    "flights/create/",
+    views.flight_create,
+    name="flight_create"
+),
+ 
+path(
+    "hotels/",
+    views.hotel_list,
+    name="hotel_list"
+),
+ 
+path(
+    "hotels/create/",
+    views.hotel_create,
+    name="hotel_create"
+),
+ 
+path(
+    "events/",
+    views.event_list,
+    name="event_list"
+),
+ 
+path(
+    "events/create/",
+    views.event_create,
+    name="event_create"
+),
+ 
+path(
+    "calendar/events/",
+    views.calendar_events,
+    name="calendar_events"
+),
+
+Show more lines
+flight_list.html
+
+
+
+HTML
+
+{% extends 'sidebar.html' %}
+ 
+{% block content %}
+ 
+<h2>Flights</h2>
+ 
+{% url 'homepage:flight_create' %}
+ 
+<hr>
+ 
+{% for flight in flights %}
+ 
+<div>
+ 
+    <h4>
+        {{ flight.airline }}
+        {{ flight.flight_number }}
+    </h4>
+ 
+    <p>
+        {{ flight.departure_airport }}
+        →
+        {{ flight.arrival_airport }}
+    </p>
+ 
+</div>
+ 
+{% empty %}
+ 
+<p>No flights found.</p>
+ 
+{% endfor %}
+ 
+{% endblock %}
+
+Show more lines
+
+hotel_list.html
+
+
+
+HTML
+
+{% extends 'sidebar.html' %}
+ 
+{% block content %}
+ 
+<h2>Hotels</h2>
+ 
+<a href="{% url 'homepage:hotel_create>
+ 
+{% for hotel in hotels %}
+ 
+<div>
+ 
+    <h4>
+        {{ hotel.hotel_name }}
+    </h4>
+ 
+    <p>
+        {{ hotel.location }}
+    </p>
+ 
+</div>
+ 
+{% empty %}
+ 
+<p>No hotels found.</p>
+ 
+{% endfor %}
+ 
+{% endblock %}
+ 
+
+Show more lines
+
+event_list.html
+
+
+
+HTML
+
+{% extends 'sidebar.html' %}
+ 
+{% block content %}
+ 
+<h2>Calendar Events</h2>
+ 
+ 'homepage:event_create' %}">
+    Add Event
+</a>
+ 
+<hr>
+ 
+{% for event in events %}
+ 
+<div>
+ 
+    <h4>
+        {{ event.title }}
+    </h4>
+ 
+    <p>
+        {{ event.start_datetime }}
+    </p>
+ 
+</div>
+ 
+{% empty %}
+ 
+<p>No events found.</p>
+ 
+{% endfor %}
+ 
+{% endblock %}
+
+Show less
+
+event_form.html
+
+
+
+HTML
+
+{% extends 'sidebar.html' %}
+ 
+{% block content %}
+ 
+<h2>Create Event</h2>
+ 
+<form method="POST">
+ 
+    {% csrf_token %}
+ 
+    {{ form.as_p }}
+ 
+    <button type="submit">
+        Save Event
+    </button>
+ 
+</form>
+ 
+{% endblock %}
+
+Show more lines
+
+calendar.html (FullCalendar)
+
+
+
+HTML
+
+{% extends 'sidebar.html' %}
+ 
+{% block content %}
+ 
+https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css
+ 
+<script src=jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
+ 
+<div id="calendar"></div>
+ 
+<script>
+ 
+document.addEventListener(
+'DOMContentLoaded',
+ 
+function () {
+ 
+    var calendar = new FullCalendar.Calendar(
+        document.getElementById('calendar'),
+ 
+        {
+            initialView: 'dayGridMonth',
+            events: '/calendar/events/'
+        }
+    );
+ 
+    calendar.render();
+});
+ 
+</script>
+ 
+{% endblock %}
+ 
+
+Show more lines
+
+Auto Create Calendar Event From Flight
+Inside flight_create():
+
+
+
+
+Python
+flight = form.save()
+ 
+CalendarEvent.objects.create(
+    trip=flight.trip,
+    event_type="Flight",
+    title=f"{flight.airline} {flight.flight_number}",
+    start_datetime=flight.departure_datetime,
+    end_datetime=flight.arrival_datetime,
+    color_code="#2563eb"
+)
+
+Show more lines
+Auto Create Calendar Event From Hotel
+Inside hotel_create():
+
+
+
+
+Python
+from datetime import datetime, time
+ 
+hotel = form.save()
+ 
+CalendarEvent.objects.create(
+    trip=hotel.trip,
+    event_type="Hotel",
+ 
+    title=hotel.hotel_name,
+ 
+    start_datetime=datetime.combine(
+        hotel.checkin_date,
+        time(15,0)
+    ),
+ 
+    end_datetime=datetime.combine(
+        hotel.checkout_date,
+        time(11,0)
+    ),
+ 
+    color_code="#16a34a"
+)
+`
+
+Show more lines
+This gives you a complete travel management system with:
+
+✅ Trips
+✅ Flights
+✅ Hotels
+✅ Calendar Events
+✅ Dashboard Counts
+✅ FullCalendar View
+✅ Automatic Flight Events
+✅ Automatic Hotel Events
+✅ User-specific data filtering
+✅ Google Maps already integrated in your Trip Details page
+
+
+
+
+
+
+
+You said:
+Add export to .ics file
+Copilot said:
+Copilot
+You can add .ics calendar export so users can import trips, flights, hotels, and events into:
+
+Google Calendar
+Outlook Calendar
+Apple Calendar
+Samsung Calendar
+1. Export Single Calendar Event
+views.py
+
+
+
+Python
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from .models import CalendarEvent
+ 
+ 
+@login_required
+def export_event_ics(request, event_id):
+ 
+    event = get_object_or_404(
+        CalendarEvent,
+        id=event_id,
+        trip__user=request.user
+    )
+ 
+    content = f"""BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Travel Planner//EN
+BEGIN:VEVENT
+UID:{event.id}@travelplanner.com
+SUMMARY:{event.title}
+DTSTART:{event.start_datetime.strftime('%Y%m%dT%H%M%S')}
+DTEND:{event.end_datetime.strftime('%Y%m%dT%H%M%S')}
+DESCRIPTION:{event.title}
+END:VEVENT
+END:VCALENDAR
+"""
+ 
+    response = HttpResponse(
+        content,
+        content_type="text/calendar"
+    )
+ 
+    response["Content-Disposition"] = (
+        f'attachment; filename="event_{event.id}.ics"'
+    )
+ 
+    return response
+
+Show more lines
+2. Export Entire Trip
+This is usually more useful.
+
+views.py
+
+
+
+Python
+@login_required
+def export_trip_ics(request, trip_id):
+ 
+    trip = get_object_or_404(
+        Trip,
+        id=trip_id,
+        user=request.user
+    )
+ 
+    ics = """
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Travel Planner//EN
+"""
+ 
+    # Flights
+    for flight in trip.flights.all():
+ 
+        ics += f"""
+BEGIN:VEVENT
+UID:flight-{flight.id}
+SUMMARY:Flight {flight.airline} {flight.flight_number}
+DTSTART:{flight.departure_datetime.strftime('%Y%m%dT%H%M%S')}
+DTEND:{flight.arrival_datetime.strftime('%Y%m%dT%H%M%S')}
+LOCATION:{flight.departure_airport} → {flight.arrival_airport}
+DESCRIPTION:Booking Ref {flight.booking_reference}
+END:VEVENT
+"""
+ 
+    # Hotels
+    for hotel in trip.hotels.all():
+ 
+        ics += f"""
+BEGIN:VEVENT
+UID:hotel-{hotel.id}
+SUMMARY:Hotel - {hotel.hotel_name}
+DTSTART:{hotel.checkin_date.strftime('%Y%m%d')}
+DTEND:{hotel.checkout_date.strftime('%Y%m%d')}
+LOCATION:{hotel.location}
+DESCRIPTION:Booking Ref {hotel.booking_reference}
+END:VEVENT
+"""
+ 
+    # Manual Events
+    for event in trip.events.all():
+ 
+        ics += f"""
+BEGIN:VEVENT
+UID:event-{event.id}
+SUMMARY:{event.title}
+DTSTART:{event.start_datetime.strftime('%Y%m%dT%H%M%S')}
+DTEND:{event.end_datetime.strftime('%Y%m%dT%H%M%S')}
+END:VEVENT
+"""
+ 
+    ics += "\nEND:VCALENDAR"
+ 
+    response = HttpResponse(
+        ics,
+        content_type="text/calendar"
+    )
+ 
+    filename = trip.trip_name.replace(" ", "_")
+ 
+    response[
+        "Content-Disposition"
+    ] = f'attachment; filename="{filename}.ics"'
+ 
+    return response
+
+Show more lines
+3. urls.py
+Add:
+
+
+
+
+Python
+path(
+    'events/<int:event_id>/export/',
+    views.export_event_ics,
+    name='export_event_ics'
+),
+ 
+path(
+    'trips/<int:trip_id>/export/',
+    views.export_trip_ics,
+    name='export_trip_ics'
+),
+4. Add Export Button on Trip Detail Page
+In trip_detail.html:
+
+
+
+
+HTML
+
+<div class="card">
+ 
+    <h2>{{ trip.trip_name }}</h2>
+ 
+    {% url 'homepage:export_trip_ics' trip.id %}
+        Export to Calendar (.ics)
+    </a>
+ 
+</div>
+
+5. Add Export Button for Individual Events
+Inside event list:
+
+
+
+
+HTML
+
+{% for event in events %}
+ 
+<div class="card">
+ 
+    <h4>{{ event.title }}</h4>
+ 
+    {% url 'homepage:export_event_ics' event.id %}
+        Download ICS
+    </a>
+ 
+</div>
+ 
+{% endfor %}
+
+Show more lines
+
+6. Add Reminders Inside ICS File
+Most calendar applications recognize alarms.
+
+Add inside every VEVENT:
+
+
+
+
+Python
+BEGIN:VALARM
+TRIGGER:-PT60M
+ACTION:DISPLAY
+DESCRIPTION:Travel Reminder
+END:VALARM
+Example:
+
+
+
+
+Python
+ics += f"""
+BEGIN:VEVENT
+UID:event-{event.id}
+SUMMARY:{event.title}
+DTSTART:{event.start_datetime.strftime('%Y%m%dT%H%M%S')}
+DTEND:{event.end_datetime.strftime('%Y%m%dT%H%M%S')}
+ 
+BEGIN:VALARM
+TRIGGER:-PT60M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+ 
+END:VEVENT
+"""
+
+Show more lines
+This creates a 1-hour reminder in Google Calendar, Outlook, and Apple Calendar.
+
+Bonus: One-click "Add to Google Calendar"
+In your template:
+
+
+
+
+HTML
+
+https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ trip.trip_name|urlencode }}
+    Add To Google Calendar
+</a>
+
+But .ics export is better because it works with Google, Outlook, Apple, and mobile calendars without additional integrations.
+
+
+
+
+
+
+
+
+You said:
+also create notification for webstie explain how to do what to implement  in django
+Copilot said:
+Copilot
+For your travel planner, I would implement 3 levels of notifications:
+
+🔔 Website Notifications (inside dashboard)
+📧 Email Notifications
+🌐 Browser Push Notifications
+Start with Website Notifications because it's easiest and most useful.
+
+Step 1: Create Notification Model
+Add to models.py
+
+
+
+
+Python
+class Notification(models.Model):
+ 
+    NOTIFICATION_TYPES = [
+        ("trip", "Trip"),
+        ("flight", "Flight"),
+        ("hotel", "Hotel"),
+        ("event", "Event"),
+    ]
+ 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="notifications"
+    )
+ 
+    notification_type = models.CharField(
+        max_length=20,
+        choices=NOTIFICATION_TYPES
+    )
+ 
+    title = models.CharField(
+        max_length=255
+    )
+ 
+    message = models.TextField()
+ 
+    is_read = models.BooleanField(
+        default=False
+    )
+ 
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+ 
+    def __str__(self):
+        return self.title
+
+Show more lines
+Run:
+
+
+
+
+Shell
+python manage.py makemigrations
+python manage.py migrate
+Step 2: Create Notifications Automatically
+When Trip Created
+In trip_create
+
+
+
+
+Python
+trip.save()
+ 
+Notification.objects.create(
+    user=request.user,
+    notification_type="trip",
+    title="Trip Created",
+    message=f"Trip to {trip.destination} created successfully."
+)
+When Flight Added
+
+
+
+Python
+flight = form.save()
+ 
+Notification.objects.create(
+    user=flight.trip.user,
+    notification_type="flight",
+    title="Flight Added",
+    message=f"{flight.airline} {flight.flight_number} added."
+)
+When Hotel Added
+
+
+
+Python
+hotel = form.save()
+ 
+Notification.objects.create(
+    user=hotel.trip.user,
+    notification_type="hotel",
+    title="Hotel Added",
+    message=f"{hotel.hotel_name} booking saved."
+)
+When Event Added
+
+
+
+Python
+event = form.save()
+ 
+Notification.objects.create(
+    user=event.trip.user,
+    notification_type="event",
+    title="Event Created",
+    message=event.title
+)
+Step 3: Dashboard Notifications Count
+Update dashboard view:
+
+
+
+
+Python
+notifications = Notification.objects.filter(
+    user=request.user,
+    is_read=False
+)
+ 
+context = {
+    ...
+    "notifications": notifications[:5],
+    "notification_count": notifications.count(),
+}
+Dashboard Bell
+Replace
+
+
+
+
+HTML
+
+<span>3</span>
+
+with
+
+
+
+
+HTML
+
+<span>{{ notification_count }}</span>
+
+Notification Dropdown
+Add below bell icon:
+
+
+
+
+HTML
+
+<div class="notification-dropdown">
+ 
+{% for notification in notifications %}
+ 
+    <div class="notification-item">
+ 
+        <strong>
+            {{ notification.title }}
+        </strong>
+ 
+        <p>
+            {{ notification.message }}
+        </p>
+ 
+    </div>
+ 
+{% empty %}
+ 
+    <p>No notifications</p>
+ 
+{% endfor %}
+ 
+</div>
+
+Show more lines
+
+Step 4: Mark Notification Read
+View
+
+
+
+Python
+@login_required
+def mark_notification_read(
+    request,
+    notification_id
+):
+ 
+    notification = get_object_or_404(
+        Notification,
+        id=notification_id,
+        user=request.user
+    )
+ 
+    notification.is_read = True
+ 
+    notification.save()
+ 
+    return redirect(
+        "homepage:dashboard"
+    )
+
+Show more lines
+URL
+
+
+
+Python
+path(
+    "notifications/read/<int:notification_id>/",
+    views.mark_notification_read,
+    name="notification_read"
+),
+Step 5: Automatic Flight Reminder
+Create management command or Celery task.
+
+Example every hour:
+
+
+
+
+Python
+from django.utils import timezone
+from datetime import timedelta
+ 
+upcoming_flights = Flight.objects.filter(
+    departure_datetime__lte=
+    timezone.now() + timedelta(hours=24),
+ 
+    departure_datetime__gte=
+    timezone.now()
+)
+Create notification:
+
+
+
+
+Python
+Notification.objects.create(
+    user=flight.trip.user,
+ 
+    notification_type="flight",
+ 
+    title="Upcoming Flight",
+ 
+    message=(
+        f"Flight "
+        f"{flight.flight_number} "
+        f"departs within 24 hours."
+    )
+)
+
+Show more lines
+Step 6: Email Notifications
+In settings:
+
+
+
+
+Python
+EMAIL_BACKEND = (
+    "django.core.mail.backends.smtp.EmailBackend"
+)
+ 
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+ 
+EMAIL_HOST_USER = "your_email@gmail.com"
+EMAIL_HOST_PASSWORD = "app_password"
+Send Email
+
+
+
+
+Python
+from django.core.mail import send_mail
+ 
+send_mail(
+    subject="Upcoming Flight",
+ 
+    message=f"""
+Your flight
+{flight.flight_number}
+ 
+departs at
+{flight.departure_datetime}
+""",
+ 
+    from_email="noreply@travelplanner.com",
+ 
+    recipient_list=[flight.trip.user.email]
+)
+
+Show more lines
+Step 7: Browser Push Notifications
+Ask permission:
+
+
+
+
+HTML
+
+<script>
+ 
+if ("Notification" in window) {
+ 
+    Notification.requestPermission();
+ 
+}
+ 
+</script>
+
+Show notification:
+
+
+
+
+HTML
+
+<script>
+ 
+new Notification(
+    "Upcoming Flight",
+    {
+        body:
+        "Flight BA123 departs tomorrow"
+    }
+);
+ 
+</script>
+
+For real production push notifications, use:
+
+Firebase Cloud Messaging (FCM)
+OneSignal
+I recommend OneSignal because setup is much easier.
+
+Step 8: Notification Center Page
+Create:
+
+
+
+
+Python
+@login_required
+def notification_list(
+    request
+):
+ 
+    notifications = Notification.objects.filter(
+        user=request.user
+    ).order_by("-created_at")
+ 
+    return render(
+        request,
+        "notifications.html",
+        {
+            "notifications": notifications
+        }
+    )
+
+Show more lines
+notifications.html
+
+
+
+
+HTML
+
+{% extends 'sidebar.html' %}
+ 
+{% block content %}
+ 
+<h2>
+    Notifications
+</h2>
+ 
+{% for notification in notifications %}
+ 
+<div class="card">
+ 
+    <h4>
+        {{ notification.title }}
+    </h4>
+ 
+    <p>
+        {{ notification.message }}
+    </p>
+ 
+    <small>
+        {{ notification.created_at }}
+    </small>
+ 
+</div>
+ 
+{% empty %}
+ 
+<p>
+    No notifications.
+</p>
+ 
+{% endfor %}
+ 
+{% endblock %}
+
+Show more lines
+
+Recommended Architecture
+When something happens:
+
+
+
+
+Plain Text
+Trip Created
+   ↓
+Notification Created
+   ↓
+Dashboard Bell Updates
+ 
+Flight Added
+   ↓
+Calendar Event Created
+   ↓
+Notification Created
+ 
+Hotel Added
+   ↓
+Calendar Event Created
+   ↓
+Notification Created
+ 
+24 Hours Before Flight
+   ↓
+Website Notification
+   ↓
+Email Reminder
+   ↓
+Browser Push Notification
+
+Show more lines
+This gives you a complete notification system similar to TripIt, Booking.com, and Google Travel inside your Django application.
+
+
+
+
+
+
+
+
+
+How to schedule 24-hour flight reminders?
+
+How to integrate OneSignal for push notifications?
+
+How to test email notifications in Django?
+
+
+
+Message Copilot
+
+
+
+AI-generated content may be incorrect
+
+
+
+progress = 0
+if trips.exists():
+progress += 25
+if flights.exists():
+progress += 25
+if hotels.exists():
+progress += 25
+if events.exists():
+progress += 25
+
+
+
+annotated-types==0.7.0
+anyio==4.14.1
+asgiref==3.11.1
+certifi==2026.6.17
+charset-normalizer==3.4.9
+distro==1.9.0
+dj-database-url==0.5.0
+Django==4.2.30
+django-allauth==65.18.0
+et_xmlfile==2.0.0
+gunicorn==23.0.0
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna==3.18
+jiter==0.16.0
+lxml==6.1.1
+numpy==2.5.1
+ollama==0.6.2
+openai==2.45.0
+openpyxl==3.1.5
+packaging==26.2
+pandas==3.0.3
+pillow==12.3.0
+psycopg2==2.9.12
+pydantic==2.13.4
+pydantic_core==2.46.4
+pymupdf==1.28.0
+pytesseract==0.3.13
+python-dateutil==2.9.0.post0
+python-docx==1.2.0
+requests==2.34.2
+setuptools==83.0.0
+six==1.17.0
+sniffio==1.3.1
+sqlparse==0.5.5
+stripe==15.3.0
+tika==3.1.0
+tqdm==4.68.4
+typing-inspection==0.4.2
+typing_extensions==4.16.0
+urllib3==2.7.0
+whitenoise==5.3.0

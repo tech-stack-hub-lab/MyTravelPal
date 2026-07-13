@@ -1,0 +1,294 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="container py-5">
+
+    <h2 class="fw-bold">
+      Import Booking
+    </h2>
+
+    <p class="text-secondary">
+      Let our AI extract your flight and hotel details automatically.
+    </p>
+
+    <div class="booking-card">
+
+      <ul class="nav nav-pills mb-4">
+
+        <li class="nav-item">
+          <button
+            class="nav-link active"
+            data-bs-toggle="pill"
+            data-bs-target="#email-pane">
+            Paste Email
+          </button>
+        </li>
+
+        <li class="nav-item">
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#pdf-pane">
+            Upload File
+          </button>
+        </li>
+
+        <li class="nav-item">
+          <button
+            class="nav-link"
+            data-bs-toggle="pill"
+            data-bs-target="#chat-pane">
+            AI Travel Assistant
+          </button>
+        </li>
+
+      </ul>
+
+      <div class="tab-content">
+
+        <!-- Paste Email -->
+
+        <div
+          class="tab-pane fade show active"
+          id="email-pane">
+
+          <form method="post">
+
+            {% csrf_token %}
+
+            <textarea
+              name="booking_text"
+              rows="10"
+              class="form-control dark-textarea"
+              placeholder="Paste booking confirmation here"></textarea>
+
+            <button
+              class="btn btn-ai mt-3 w-100"
+              name="extract_text">
+
+              Extract with AI
+
+            </button>
+
+          </form>
+
+          {% if text %}
+
+          <div class="custom-card mt-4">
+
+            <div class="card-header-custom">
+
+              <i class="bi bi-file-text-fill"></i>
+
+              <span>
+                Extracted Content
+              </span>
+
+            </div>
+
+            <pre>{{ text }}</pre>
+
+          </div>
+
+          {% endif %}
+        </div>
+
+        <!-- Upload File -->
+
+    <div class="tab-pane fade" id="pdf-pane">
+
+    <form method="post" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <input
+            type="file"
+            name="file"
+            class="form-control">
+
+        <button
+            type="submit"
+            name="upload_file"
+            class="btn btn-primary mt-3">
+
+            Upload & Extract
+
+        </button>
+
+    </form>
+
+    {% if uploads %}
+
+    <div class="mt-4">
+
+        {% for upload in uploads %}
+
+        <div class="custom-card mb-3">
+
+            <div class="card-header-custom">
+
+                <i class="bi bi-file-earmark-fill"></i>
+
+                <span>{{ upload.filename }}</span>
+
+            </div>
+
+            <div class="extract-card">
+
+                <div class="extract-header">
+
+                    <i class="bi bi-file-earmark-text"></i>
+
+                    Extracted Content
+
+                </div>
+
+                <div class="extract-body">
+
+                    {{ upload.extracted_text|linebreaks }}
+
+                </div>
+
+            <div class="extract-footer text-end">
+            <a href="{% url 'extractor:delete_upload' upload.id %}" class="delete-icon"
+            title="Delete File"
+            onclick="return confirm('Are you sure?');">
+            <i class="bi bi-trash-fill"></i>
+             </a>
+
+</div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- Pagination -->
+
+    <nav class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+            {% if uploads.has_previous %}
+
+            <li class="page-item">
+
+                ?page={{ uploads.previous_page_number }}
+
+                    Previous
+
+                </a>
+
+            </li>
+
+            {% endif %}
+
+            {% for num in uploads.paginator.page_range %}
+
+            <li class="page-item {% if uploads.number == num %}active{% endif %}">
+
+                ?page={{ num }}
+
+            </li>
+
+            {% endfor %}
+
+            {% if uploads.has_next %}
+
+            <li class="page-item">
+
+                ?page={{ uploads.next_page_number }}
+
+            </li>
+
+            {% endif %}
+
+        </ul>
+
+    </nav>
+
+    {% endif %}
+
+</div>
+
+        <!-- AI Chat -->
+
+        <div
+          class="tab-pane fade"
+          id="chat-pane">
+
+         <form method="post">
+
+    {% csrf_token %}
+
+    <textarea
+        name="question"
+        class="form-control">
+    </textarea>
+
+    <button
+        type="submit"
+        name="ask_assistant"
+        class="btn btn-success">
+
+        Ask Assistant
+
+    </button>
+
+</form>
+
+          {% if answer %}
+
+          <div class="custom-card mt-4">
+
+            <div class="card-header-custom">
+
+              <i class="bi bi-robot"></i>
+
+              <span>
+                AI Response
+              </span>
+
+            </div>
+
+            <pre>{{ answer }}</pre>
+
+          </div>
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+<div id="loader-overlay" style="display:none;">
+    <div class="loader-container">
+        <div class="spinner-border text-primary"></div>
+        <p class="mt-3">AI is processing your booking...</p>
+    </div>
+</div>
+<script>
+
+document.querySelectorAll("form").forEach(form=>{
+
+    form.addEventListener("submit",function(){
+
+        document.getElementById(
+            "loader-overlay"
+        ).style.display="block";
+
+    });
+
+});
+
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'sidebar.html' %}
+ 
+{% block content %}
+ 
+<h2>Hotels</h2>
+ 
+<a href="{% url 'homepage:hotel_create' %}">Add Hotel</a>
+ 
+{% for hotel in hotels %}
+ 
+<div>
+ 
+    <h4>
+        {{ hotel.hotel_name }}
+    </h4>
+ 
+    <p>
+        {{ hotel.location }}
+    </p>
+ 
+</div>
+ 
+{% empty %}
+ 
+<p>No hotels found.</p>
+ 
+{% endfor %}
+ 
+{% endblock %}
