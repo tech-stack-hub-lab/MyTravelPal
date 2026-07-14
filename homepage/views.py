@@ -159,7 +159,8 @@ def flight_list(request):
 def flight_create(request):
  
     form = FlightForm(
-        request.POST or None
+        request.POST or None,
+        user=request.user,
     )
  
     if request.method == "POST":
@@ -199,7 +200,8 @@ def hotel_list(request):
 def hotel_create(request):
  
     form = HotelBookingForm(
-        request.POST or None
+        request.POST or None,
+        user=request.user,
     )
  
     if request.method == "POST":
@@ -240,7 +242,8 @@ def event_list(request):
 def event_create(request):
  
     form = CalendarEventForm(
-        request.POST or None
+        request.POST or None,
+        user=request.user,
     )
  
     if request.method == "POST":
@@ -250,7 +253,7 @@ def event_create(request):
             form.save()
  
             return redirect(
-                "homepage:events"
+                "homepage:event_list"
             )
     print(form.errors)
     return render(

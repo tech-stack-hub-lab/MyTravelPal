@@ -35,16 +35,23 @@
 
                         <div class="col-md-6">
                             <label class="form-label">
-                                Event Title
+                                Trip
                             </label>
-                           <input type="text" class="form-control" name="title" placeholder="London Sightseeing Tour">
+                            {{ form.trip }}
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label">
-                                Location
+                                Event Type
                             </label>
-                            <input type="text" class="form-control" name="location" placeholder="London">
+                            <input type="text" class="form-control" name="event_type" placeholder="Tour">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Event Title
+                            </label>
+                           <input type="text" class="form-control" name="title" placeholder="London Sightseeing Tour">
                         </div>
 
                         <div class="col-md-6">
@@ -61,11 +68,11 @@
                             <input type="datetime-local" class="form-control" name="end_datetime">
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <label class="form-label">
-                                Description
+                                Color
                             </label>
-                <textarea class="form-control" name="description" placeholder="Enter event description"></textarea>
+                            <input type="color" class="form-control" name="color_code" value="#3b82f6">
                         </div>
 
                     </div>

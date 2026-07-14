@@ -1,10 +1,17 @@
 import ollama
 
-def ask_document(
-    document,
-    question
-):
 
+def _fallback_response(message, error=None):
+    if error:
+        return (
+            f"Unable to connect to Ollama right now. "
+            f"{message}\n\n"
+            f"Error: {error}"
+        )
+    return message
+
+
+def ask_document(document, question):
     prompt = f"""
     Document:
 
@@ -15,20 +22,25 @@ def ask_document(
     {question}
     """
 
-    response = ollama.chat(
-        model="llama3",
-        messages=[
-            {
-                "role":"user",
-                "content":prompt
-            }
-        ]
-    )
+    try:
+        response = ollama.chat(
+            model="llama3",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+        )
+        return response["message"]["content"]
+    except Exception as exc:
+        return _fallback_response(
+            f"I could not analyze the document automatically. Please review the extracted text manually.\n\nDocument: {document}\nQuestion: {question}",
+            exc,
+        )
 
-    return response["message"]["content"]
 
 def travel_assistant(question):
-
     prompt = f"""
     You are a travel guide.
 
@@ -46,14 +58,19 @@ def travel_assistant(question):
     - Transport Advice
     """
 
-    response = ollama.chat(
-        model="llama3",
-        messages=[
-            {
-                "role":"user",
-                "content":prompt
-            }
-        ]
-    )
-
-    return response["message"]["content"]
+    try:
+        response = ollama.chat(
+            model="llama3",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+        )
+        return response["message"]["content"]
+    except Exception as exc:
+        return _fallback_response(
+            f"I could not generate an AI travel response right now. Please review the uploaded booking details manually.\n\nQuestion: {question}",
+            exc,
+        )
