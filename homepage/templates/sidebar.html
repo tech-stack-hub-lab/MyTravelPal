@@ -95,7 +95,7 @@
             </h1>
             <p>Manage trips, bookings and travel plans.</p>
             <span
-              class="tier-badge {% if user.is_premium %}premium{% else %}free{% endif %}"
+              class="tier-badge {% if current_plan == 'premium' %}Premium{% else %}Free{% endif %}"
               >{% if current_plan == "premium" %}Premium{% else %}Free{% endif %}</span
             >
             <button
