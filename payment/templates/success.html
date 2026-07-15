@@ -1,0 +1,8 @@
+
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<h1>Payment Successful</h1>
+    <p>Your payment has been processed successfully. Thank you for your purchase!</p>
+    <a href="{% url 'homepage:dashboard' %}">Return to Dashboard Page</a>
+{% endblock %}

@@ -70,7 +70,7 @@
           </li>
 
           <li>
-            <a href="{% url 'homepage:pricing' %}">
+            <a href="{% url 'payment:pricing' %}">
               <i class="fas fa-route"></i>
               <span>Pricing</span>
             </a>
@@ -96,7 +96,7 @@
             <p>Manage trips, bookings and travel plans.</p>
             <span
               class="tier-badge {% if user.is_premium %}premium{% else %}free{% endif %}"
-              >{% if user.is_premium %}Premium{% else %}Free{% endif %}</span
+              >{% if current_plan == "premium" %}Premium{% else %}Free{% endif %}</span
             >
             <button
               type="button"

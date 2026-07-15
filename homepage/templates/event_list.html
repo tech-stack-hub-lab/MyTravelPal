@@ -1,41 +1,35 @@
 {% extends 'sidebar.html' %}
  
 {% block content %}
- 
-<h2>Calendar Events</h2>
- 
- <a href="{% url 'homepage:event_create' %}">
+
+ <section class="page-section">
+  <div class="page-header">
+    <div>
+      <h1>Calendar Events</h1>
+      <p>Manage your itinerary and view all saved trips.</p>
+    </div>
+    <div class="text-end mb-3"><a href="{% url 'homepage:event_create' %}">
     Add Event
-</a>
- 
-<hr>
- 
-    <a href="{% url 'homepage:event_create' %}">
-        Add Event
-    </a>
- 
-    <a href="{% url 'homepage:event_create' %}">
-        Add Event
-    </a>
- 
-    {% for event in events %}
- 
-<div>
- 
-    <h4>
+</a></div>
+  </div>
+
+  {% if events %}
+    <div class="item-grid">
+      {% for event in events %}
+        <div class="card">
+      <h4>
         {{ event.title }}
     </h4>
  
     <p>
         {{ event.start_datetime }}
     </p>
- 
-</div>
- 
-{% empty %}
- 
-<p>No events found.</p>
- 
-{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No Events found.</p>
+  {% endif %}
+</section>
  
 {% endblock %}

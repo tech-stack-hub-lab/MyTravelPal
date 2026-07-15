@@ -369,72 +369,7 @@ def chat_api(request):
 
     return JsonResponse({'reply': reply})
 
-@login_required
-def pricing(request):
-    print("test1", settings.STRIPE_SECRET_KEY)
-    stripe_public = getattr(settings, 'STRIPE_PUBLIC_KEY', 'pk_test_51TrNBK9MayN2qjd9NbBkDkljV7h1VueAhrtUUHs2mX1TogB333jXnqxFPEMULLkyYA8WCzaaJnd9vWoGDcF1ddpk00Z0NVhgfK')
-    stripe_price = getattr(settings, 'STRIPE_PRICE_ID', 1000)  # Default price ID for testing
-    return render(request, 'pricing.html', {'stripe_public_key': stripe_public, 'stripe_price_id': stripe_price})
 
 
 
-def pricing_checkout(request):
-    print("test", settings.STRIPE_SECRET_KEY)
-    if request.method == "POST":
-        price_id = request.POST.get("price_id")
-
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=[
-                {
-                    "price": 'price_1TrmCn9MayN2qjd9sbvzNqis',
-                    "quantity": 1,
-                }
-            ],
-            mode="subscription",  # use "payment" for one-time payment
-            success_url=request.build_absolute_uri(
-                reverse("homepage:success")
-            ),
-            cancel_url=request.build_absolute_uri(
-                reverse("homepage:cancel")
-            ),
-        )
-
-        return redirect(checkout_session.url)
-
-    return redirect("homepage:pricing")
-def success(request):
-    return render(request, "success.html")
-
-
-def cancel(request):
-    return render(request, "cancel.html")
-@login_required
-def create_checkout_session(request):
-    """Create a Stripe Checkout session (scaffold).
-
-    If Stripe isn't configured this returns a 400 with a clear message.
-    """
-    if request.method != 'POST':
-        return HttpResponse(status=405)
-    secret = getattr(settings, 'STRIPE_SECRET_KEY', '')
-    if not secret:
-        return JsonResponse({'error': 'Stripe not configured'}, status=400)
-    try:
-        import stripe
-        stripe.api_key = secret
-        price_id = request.POST.get('price_id') or request.POST.get('plan')
-        if not price_id:
-            return JsonResponse({'error': 'price_id required'}, status=400)
-        domain = request.build_absolute_uri('/')[:-1]
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            mode='subscription',
-            line_items=[{'price': price_id, 'quantity': 1}],
-            success_url=domain + '/dashboard/?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url=domain + '/pricing/',
-        )
-        return JsonResponse({'url': session.url})
-    except Exception as exc:
-        return JsonResponse({'error': str(exc)}, status=500)
 

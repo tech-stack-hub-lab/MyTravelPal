@@ -2,23 +2,22 @@
  
 {% block content %}
  
-<h2>Flights</h2>
- 
-<a href="{% url 'homepage:flight_create' %}">
+<section class="page-section">
+  <div class="page-header">
+    <div>
+      <h1>Add Flights based on trips</h1>
+      <p>Manage your itinerary and view all saved trips.</p>
+    </div>
+    <div class="text-end mb-3"><a href="{% url 'homepage:flight_create' %}">
     Add Flight
-</a>
- 
-<hr>
- 
-    <a href="{% url 'homepage:flight_create' %}">
-        Add Flight
-    </a>
- 
-    {% for flight in flights %}
- 
-<div>
- 
-    <h4>
+</a></div>
+  </div>
+
+  {% if flights %}
+    <div class="item-grid">
+      {% for flight in flights %}
+        <div class="card">
+      <h4>
         {{ flight.airline }}
         {{ flight.flight_number }}
     </h4>
@@ -28,13 +27,13 @@
         →
         {{ flight.arrival_airport }}
     </p>
- 
-</div>
- 
-{% empty %}
- 
-<p>No flights found.</p>
- 
-{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No flights found.</p>
+  {% endif %}
+</section>
+
  
 {% endblock %}

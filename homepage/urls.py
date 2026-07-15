@@ -23,10 +23,6 @@ urlpatterns = [
     path("calendar/events/",views.calendar_events, name="calendar_events"),
     path('uploads/', views.uploaded_files, name='uploaded_files'),
     path('uploads/new/', views.upload_booking, name='upload_booking'),
-    path('pricing/', views.pricing, name='pricing'),
-    path('pricing/checkout/', views.create_checkout_session, name='pricing_checkout'),
-    path('success/', views.success, name='success'),
-    path('cancel/', views.cancel, name='cancel'),
     path('chat/api/', views.chat_api, name='chat_api'),
     
 ]

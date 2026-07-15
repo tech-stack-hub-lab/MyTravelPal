@@ -12,14 +12,14 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-
 import dj_database_url
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-if (BASE_DIR / 'env.py').is_file():
-    import env
+load_dotenv(BASE_DIR / '.env')
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 STATICFILES_DIR = os.path.join(BASE_DIR, 'static')
 
@@ -28,13 +28,18 @@ STATICFILES_DIR = os.path.join(BASE_DIR, 'static')
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'False'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'False'
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 CSRF_TRUSTED_ORIGINS = ["https://my-travel-pal-9b9eef6abc96.herokuapp.com", "http://localhost:8000", ]
 # ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "my-travel-pal-9b9eef6abc96.herokuapp.com", "https://my-travel-pal-9b9eef6abc96.herokuapp.com"]
+
 AUTH_USER_MODEL = 'homepage.User'
 
 
@@ -52,7 +57,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'extractor'
+    'extractor',
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +87,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'payment.context_processors.subscription_plan',
+
             ],
         },
     },
@@ -113,6 +121,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
 
 DATABASES = {
     'default': dj_database_url.parse(
@@ -162,7 +171,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-
+ 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

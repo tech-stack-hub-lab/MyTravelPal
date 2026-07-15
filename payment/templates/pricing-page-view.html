@@ -1,0 +1,63 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h1 class="text-center mb-3">Choose Your Plan</h1>
+    <p class="text-center mb-5">Choose a plan to unlock Premium features like priority itinerary building and advanced searches.</p>
+    <div class="row">
+
+        <!-- Free Plan -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+
+                    <h3>{{ plans.free.name }}</h3>
+
+                    <h1>$0</h1>
+
+                    <ul class="list-unstyled">
+                        <li>Basic Features</li>
+                        <li>Basic trip tracking, uploads and calendar events.</li>
+                    </ul>
+
+                    <button class="btn btn-secondary">
+                        Free Forever
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Plan -->
+        <div class="col-md-6">
+            <div class="card border-primary shadow-sm">
+                <div class="card-body text-center">
+
+                    <h3>{{ plans.premium.name }}</h3>
+
+                    <h1>${{ plans.premium.price }}</h1>
+
+                    <ul class="list-unstyled">
+                        <li>Unlimited Access</li>
+                        <li>Priority itinerary generation, chat assistant, and advanced trip insights.</li>
+                    </ul>
+        
+                   <form action="/checkout/" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" id="checkout-button" class="btn btn-primary">
+                            Upgrade for $5
+                        </button>
+                     
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<script src="https://js.stripe.com/dahlia/stripe.js"></script>
+{% endblock %}

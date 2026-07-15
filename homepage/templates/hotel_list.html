@@ -1,29 +1,36 @@
 {% extends 'sidebar.html' %}
  
 {% block content %}
- 
-<h2>Hotels</h2>
- 
-<a href="{% url 'homepage:hotel_create' %}">Add Hotel</a>
- 
-{% for hotel in hotels %}
- 
-<div>
- 
-    <h4>
+
+
+<section class="page-section">
+  <div class="page-header">
+    <div>
+      <h1>Add Hotels based on trips</h1>
+      <p>Manage your itinerary and view all saved trips.</p>
+    </div>
+    <div class="text-end mb-3"><a href="{% url 'homepage:hotel_create' %}">Add Hotel</a></div>
+  </div>
+
+  {% if hotels %}
+    <div class="item-grid">
+     {% for hotel in hotels %}
+        <div class="card">
+       <h4>
         {{ hotel.hotel_name }}
     </h4>
  
     <p>
         {{ hotel.location }}
     </p>
- 
-</div>
- 
-{% empty %}
- 
-<p>No hotels found.</p>
- 
-{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No Hotels found.</p>
+  {% endif %}
+</section>
  
 {% endblock %}
+
+

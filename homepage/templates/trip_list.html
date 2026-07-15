@@ -7,7 +7,7 @@
       <h1>Trips</h1>
       <p>Manage your itinerary and view all saved trips.</p>
     </div>
-    <a class="btn btn-primary" href="{% url 'homepage:trip_create' %}">New Trip</a>
+    <div class="text-end mb-3"><a class="btn btn-primary" href="{% url 'homepage:trip_create' %}">New Trip</a></div>
   </div>
 
   {% if trips %}
