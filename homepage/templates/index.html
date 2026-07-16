@@ -15,12 +15,13 @@
   </p>
 
   <div class="hero-buttons">
-    <button class="btn-primary large">
-      Start for Free
-      <i class="fa-solid fa-arrow-right"></i>
-    </button>
+    <a href="{% url 'account_signup' %}"></a><button class="btn-primary large">
+      Start for Free <i class="fa-solid fa-arrow-right"></i>
+    </button></a> 
 
-    <button class="btn-outline large">View live demo</button>
+    <a href="{% url 'account_login' %}">
+      <button class="btn-outline large"> View live demo</button>
+    </a>
   </div>
 
   <small>No credit card required · Free plan available</small>

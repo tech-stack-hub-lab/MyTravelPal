@@ -170,7 +170,7 @@ a.logo {
     display:flex;
     justify-content:center;
     margin-top:80px;
-    padding:20px;
+    padding: 0px 20px 120px 20px;
 }
 
 .dashboard-card{

@@ -2,13 +2,10 @@
 My Travel Pal is a travel management web application that centralizes trip, flight, and hotel booking information in one platform. Users can import booking details using AI, view organized itineraries and calendar events, manage travel plans, and use an AI assistant for travel guidance, making trip planning simpler and more efficient.
 
 **View Site** → [TravelPal](https://my-travel-pal-9b9eef6abc96.herokuapp.com/)
-![Screenshot of the dark mode on different devices](documents/mockup1.jpeg)
-
 
 ## 📚 Table of Contents
 
 - [📌 Project Overview](#-project-overview)
-- [📁 Project Structure](#-project-structure)
 - [ ErD](#-erd)
 - [Flow-Chart] (#-flowChart)
 - [🎯 User Stories](#-user-stories)
@@ -33,21 +30,10 @@ My Travel Pal is a travel management web application that centralizes trip, flig
 ---
 
 # 📌 Project Overview
+centralizes trip, flight, and hotel booking information in one platform. Users can import booking details using AI, view organized itineraries and calendar events, manage travel plans, and use an AI assistant for travel guidance, making trip planning simpler and more efficient.
 
-
-
-# 📁 Project Structure
-
-
-Travel Pal/
-├── index.html
-├── assets/
-│   ├── css/style.css
-│   ├── js/script.js
-│   ├── images/
-│   ├── json/currency.json
-│   
-└── README.md
+## 🧾 ERD
+![ERD](documents/erd.pdf)
 
 ## 🧾 User Stories
 
@@ -201,10 +187,9 @@ find . -name "sidebar.html"
 - JavaScript (ES6) for interactivity and API integration
 - Bootstrap 5 for grid responsiveness and components
 - Font Awesome for icons and UI markers
-- Chart.js for trend visualization support
-- OpenWeather API for weather data
-- Exchange rate API for currency values
-- LocalStorage for theme and state persistence
+- Python
+- Django
+- PostgreSql
 
 # 🎨 Front-End Design & Interactivity (LO1)
 
@@ -212,14 +197,7 @@ The UI emphasizes a modular dashboard with clear sections and responsive groupin
 
 ## Colour Palette
 
-**Dark mode**
-
-![My travel pal](assets/documents/dark-mode.png)
-
-**Light mode**
-
-![My travel pal](assets/documents/light-mode.png)
-
+![My travel pal](assets/documents/color-pallate.jpeg)
 
 ## Typography
 
@@ -233,18 +211,7 @@ The project uses one display family from [Google Fonts](https://fonts.google.com
 
 The wireframes show desktop, tablet, and mobile layout structure with the updated screenshot-style design.
 
-![Wireframes](assets/documents/wireframes/screens.png)
-
-These wireframes are stored in `assets/documents/wireframes` and reflect the key homepage sections: navigation, converter hero, weather panel, exchange chart, currency cards, about section, FAQ, and footer.
-
-# ✅ Testing & Validation (LO2)
-
-- HTML structure is built with semantic elements and validated for correctness
-![validation](assets/documents/validation-result/html-validation.png)
-- CSS is structured for responsive rendering and minimal duplication
-![validation](assets/documents/validation-result/css-validation.png)
-- JavaScript behavior is tested to ensure no syntax errors and proper form handling
-![validation](assets/documents/validation-result/javascript-validation.png)
+![Wireframes](assets/documents/image.png)
 
 # ☁️ Deployment & Version Control (LO3)
 
@@ -281,8 +248,27 @@ Responsible use and limitations:
 
 Example prompts:
 
- - "Check this currency conversion function for logic errors and suggest improvements."
- - "Create wireframe ideas for a  dashboard with weather panel."
+ Act as my personal Travel Pal and expert travel planner.
+
+Your role is to help me plan, organize, and optimize my trips. Based on my destination, budget, travel dates, interests, and travel style, create a complete travel plan that includes:
+
+- Best flights and transportation options
+- Accommodation recommendations
+- Day-by-day itinerary
+- Must-see attractions and hidden gems
+- Local food recommendations
+- Estimated budget breakdown
+- Weather and packing suggestions
+- Safety tips and local customs
+- Time-saving travel hacks
+- Alternative options for bad weather or budget changes
+
+Ask relevant questions if information is missing. Present recommendations in a clear, organized format with practical travel advice. Prioritize experiences that match my interests and budget while minimizing unnecessary travel time and costs.
+
+Destination: [Destination]
+Travel Dates: [Dates]
+Budget: [Budget]
+
 
 # 📦 Installation & Setup
 
@@ -290,7 +276,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/your-username/
-cd currency-converter
+cd MyTravelPal
 ```
 
 Open the project in a browser or use VS Code Live Server for local development.
@@ -307,28 +293,14 @@ Open the project in a browser or use VS Code Live Server for local development.
 
 Use the wireframe images above for the updated responsive layout preview.
 ![Desktop]
-![Screenshot of the dark mode on desktop](assets/documents/desktop/1.jpeg)
-![Screenshot of the light mode on desktop](assets/documents/desktop/2.jpeg)
-
-![Tablet]
-![Screenshot of the dark mode on tablet](assets/documents/tablet/tablet2.jpeg)
-![Screenshot of the light mode on tablet](assets/documents/tablet/tablet1.jpeg)
-
-![Mobile]
-![Screenshot of the dark mode on mobile](assets/documents/mobile/1.png)
-![Screenshot of the light mode on mobile](assets/documents/mobile/2.png)
-# 🔗 API Attribution
-
-- OpenWeatherMap for weather data
-- ExchangeRate API for currency conversion rates
+![Screenshot for desktop](assets/documents/1.png)
+![Screenshot for desktop](assets/documents/2.png)
 
 # 🚀 Future Improvements
 
-- Add currency favorites and bookmarks
-- Improve chart with real historical API data (backend proxy to resolve CORS and secure API keys; support day/week/month/year/5-year ranges)
-- Add multi-language support
-- Enhance accessibility and keyboard navigation
-- Add offline caching for faster load times
+- Add AI Assistant for whole website
+- Add itnenary
+
 
 # Lighthouse Performance
 
@@ -338,5 +310,5 @@ Use the wireframe images above for the updated responsive layout preview.
 - SEO: meta descriptions, titles, and meaningful content hierarchy
 
 > Recommended: run Chrome Lighthouse for exact desktop and mobile scores.
-![lighthouse](assets/documents/validation-result/accessibility.png)
+![lighthouse](documents/lighthouse.png)
 
