@@ -197,7 +197,7 @@ The UI emphasizes a modular dashboard with clear sections and responsive groupin
 
 ## Colour Palette
 
-![My travel pal](assets/documents/color-pallate.jpeg)
+![My travel pal](documents/color-pallate.jpeg)
 
 ## Typography
 
@@ -211,7 +211,7 @@ The project uses one display family from [Google Fonts](https://fonts.google.com
 
 The wireframes show desktop, tablet, and mobile layout structure with the updated screenshot-style design.
 
-![Wireframes](assets/documents/image.png)
+![Wireframes](documents/image.png)
 
 # ☁️ Deployment & Version Control (LO3)
 
@@ -293,8 +293,8 @@ Open the project in a browser or use VS Code Live Server for local development.
 
 Use the wireframe images above for the updated responsive layout preview.
 ![Desktop]
-![Screenshot for desktop](assets/documents/1.png)
-![Screenshot for desktop](assets/documents/2.png)
+![Screenshot for desktop](documents/1.png)
+![Screenshot for desktop](documents/2.png)
 
 # 🚀 Future Improvements
 
