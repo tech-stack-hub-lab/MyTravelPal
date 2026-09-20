@@ -1,0 +1,235 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Step 2: Booking Document Extraction</h3>
+        <span class="badge bg-primary rounded-pill">2 / 4</span>
+      </div>
+      <p class="text-muted mb-0">Upload flight or hotel confirmations to auto-fill details.</p>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body p-4">
+            <h5>Upload travel confirmation</h5>
+            <p class="text-muted small mb-3">Flight, train, bus, or event ticket. Extracted automatically.</p>
+            {{ upload_form.flight_file }}
+            <button type="submit" name="upload_flight" value="1" class="btn btn-primary mt-3 w-100">Upload flight ticket</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body p-4">
+            <h5>Hotel bill + hotel search</h5>
+            <p class="text-muted small mb-3">Upload a hotel invoice to populate the stay details, or search for a hotel nearby.</p>
+            {{ upload_form.hotel_file }}
+            <button type="submit" name="upload_hotel" value="1" class="btn btn-primary mt-3 w-100">Upload hotel bill</button>
+
+            <div class="mt-3">
+              <label class="form-label">Search hotels</label>
+              {{ upload_form.hotel_search }}
+              <button type="submit" name="search_hotels" value="1" class="btn btn-outline-primary mt-2">Search hotels</button>
+            </div>
+
+            {% if hotel_search_results %}
+              <div class="mt-3">
+                {% for hotel in hotel_search_results %}
+                  <div class="border rounded p-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <strong>{{ hotel.name }}</strong>
+                      <span class="badge text-bg-light">{{ hotel.rating|default:'4.5' }} / 5</span>
+                    </div>
+                    <div class="small text-muted">{{ hotel.address }}</div>
+                    {% if hotel.price_level %}
+                      <div class="small text-muted">{{ hotel.price_level }}</div>
+                    {% endif %}
+                    <button type="button" class="btn btn-sm btn-primary mt-2" onclick="fillHotelDetails('{{ hotel.name|escapejs }}', '{{ hotel.address|escapejs }}')">Use this hotel</button>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0" id="flight-form-card">
+          <div class="card-body p-4">
+            <h5>Travel details</h5>
+            {{ flight_form.as_p }}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0" id="hotel-form-card">
+          <div class="card-body p-4">
+            <h5>Hotel details</h5>
+            {{ hotel_form.as_p }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <h5>Extracted Travel Data</h5>
+            <pre id="travel-extracted-preview" class="mb-0 text-dark bg-light p-3 rounded small">{{ extracted_flight|default:'{}' }}</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <h5>Extracted Hotel Data</h5>
+            <pre id="hotel-extracted-preview" class="mb-0 text-dark bg-light p-3 rounded small">{{ extracted_hotel|default:'{}' }}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="{% url 'homepage:trip_wizard_step1' %}" class="btn btn-outline-secondary">Back</a>
+      <button type="submit" name="save_details" value="1" class="btn btn-primary">Save & Continue</button>
+    </div>
+  </form>
+</div>
+
+{% if extracted_flight %}
+  {{ extracted_flight|json_script:"extracted-flight-data" }}
+{% endif %}
+{% if extracted_hotel %}
+  {{ extracted_hotel|json_script:"extracted-hotel-data" }}
+{% endif %}
+
+<script>
+function normalizeFieldValue(field, value) {
+  if (value === undefined || value === null) return '';
+  let normalized = String(value).trim();
+  if (!normalized) return '';
+
+  if (field && field.type === 'datetime-local') {
+    normalized = normalized.replace(' ', 'T');
+    if (normalized.length > 16) normalized = normalized.substring(0, 16);
+  }
+  if (field && field.type === 'date') {
+    normalized = normalized.split('T')[0].split(' ')[0];
+  }
+  if (field && field.type === 'number') {
+    const numeric = Number(normalized.replace(/[^\d.-]/g, ''));
+    return Number.isFinite(numeric) ? String(numeric) : normalized;
+  }
+  return normalized;
+}
+
+function setFieldValue(container, fieldName, value) {
+  if (!container || value === undefined || value === null || String(value).trim() === '') return;
+  const field = container.querySelector(`input[name="${fieldName}"], textarea[name="${fieldName}"], select[name="${fieldName}"]`);
+  if (field) field.value = normalizeFieldValue(field, value);
+}
+
+function showExtractedPreview(elementId, data) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  if (!data || Object.keys(data).length === 0) { element.textContent = '{}'; return; }
+  element.textContent = JSON.stringify(data, null, 2);
+}
+
+function autoPopulateFlightData(data) {
+  const container = document.getElementById('flight-form-card');
+  if (!container) return;
+  showExtractedPreview('travel-extracted-preview', data);
+  setFieldValue(container, 'airline', data.airline);
+  setFieldValue(container, 'flight_number', data.flight_number);
+  setFieldValue(container, 'booking_reference', data.booking_reference);
+  setFieldValue(container, 'departure_airport', data.departure_airport);
+  setFieldValue(container, 'arrival_airport', data.arrival_airport);
+  setFieldValue(container, 'departure_datetime', data.departure_datetime);
+  setFieldValue(container, 'arrival_datetime', data.arrival_datetime);
+  setFieldValue(container, 'seat_number', data.seat_number);
+  setFieldValue(container, 'title', data.title);
+  setFieldValue(container, 'location', data.location);
+}
+
+function autoPopulateHotelData(data) {
+  const container = document.getElementById('hotel-form-card');
+  if (!container) return;
+  showExtractedPreview('hotel-extracted-preview', data);
+  setFieldValue(container, 'hotel_name', data.hotel_name);
+  setFieldValue(container, 'booking_reference', data.booking_reference);
+  setFieldValue(container, 'location', data.location);
+  setFieldValue(container, 'checkin_date', data.checkin_date);
+  setFieldValue(container, 'checkout_date', data.checkout_date);
+  setFieldValue(container, 'total_cost', data.total_cost);
+}
+
+function autoPopulateFlight() {
+  const container = document.getElementById('flight-form-card');
+  if (!container) return;
+  const extracted = JSON.parse(document.getElementById('extracted-flight-data')?.textContent || '{}');
+  autoPopulateFlightData(extracted);
+}
+
+function autoPopulateHotel() {
+  const container = document.getElementById('hotel-form-card');
+  if (!container) return;
+  const extracted = JSON.parse(document.getElementById('extracted-hotel-data')?.textContent || '{}');
+  autoPopulateHotelData(extracted);
+}
+
+function fillHotelDetails(name, address) {
+  const container = document.getElementById('hotel-form-card');
+  if (!container) return;
+  const hotelName = container.querySelector('input[name="hotel_name"]');
+  const location = container.querySelector('input[name="location"]');
+  if (hotelName) hotelName.value = name;
+  if (location) location.value = address;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value;
+
+  document.querySelectorAll('input[type="file"]').forEach(function (input) {
+    input.addEventListener('change', function () {
+      if (!(this.files && this.files.length > 0)) return;
+
+      const formData = new FormData(this.form);
+      fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrfToken || '' }
+      })
+      .then(function (response) {
+        if (!response.ok) throw new Error('Upload failed');
+        return response.json();
+      })
+      .then(function (data) {
+        if (data && data.success) {
+          autoPopulateFlightData(data.flight || {});
+          autoPopulateHotelData(data.hotel || {});
+        }
+      })
+      .catch(function () { return; });
+    });
+  });
+
+  autoPopulateFlight();
+  autoPopulateHotel();
+});
+</script>
+{% endblock %}

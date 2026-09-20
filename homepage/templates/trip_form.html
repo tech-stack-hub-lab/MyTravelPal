@@ -42,21 +42,36 @@
                 placeholder="Paris, France"
               />
             </div>
-
-            <div class="col-md-6">
-              <label class="form-label"> Start Date </label>
-              <input type="date" name="start_date" class="form-control" />
+             <div class="col-md-6">
+              <label class="form-label"> Category </label>
+              <div class="form-group mb-3">
+                <select name="category" id="category" class="form-select">
+                <option value="Leisure" selected>Leisure</option>
+                <option value="Vacation">Vacation / Leisure</option>
+                <option value="Cultural">Cultural & Sightseeing</option>
+                <option value="Adventure">Adventure & Outdoor</option>
+                <option value="Business">Business / Work</option>
+                <option value="Road Trip">Road Trip</option>
+                <option value="Family">Family Trip</option>
+                <option value="Solo">Solo Travel</option>
+              </select>
+</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label"> End Date </label>
-              <input type="date" name="end_date" class="form-control" />
+              <!-- <label class="form-label"> Start Date </label> -->
+              <input type="hidden" name="start_date" class="form-control" />
             </div>
 
             <div class="col-md-6">
-              <label class="form-label"> Budget </label>
+              <!-- <label class="form-label"> End Date </label> -->
+              <input type="hidden" name="end_date" class="form-control" />
+            </div>
+
+            <div class="col-md-6">
+              <!-- <label class="form-label"> Budget </label> -->
               <input
-                type="number"
+                type="hidden"
                 name="budget"
                 class="form-control"
                 placeholder="1000"
@@ -74,7 +89,7 @@
               </select>
             </div>
 
-            <div class="col-12">
+            <!-- <div class="col-12">
               <label class="form-label"> Notes </label>
               <textarea
                 name="notes"
@@ -82,7 +97,7 @@
                 rows="4"
                 placeholder="Add trip notes here..."
               ></textarea>
-            </div>
+            </div> -->
           </div>
           <div class="mt-4 text-end">
             <a href="#" class="btn btn-outline-secondary"> Cancel </a>

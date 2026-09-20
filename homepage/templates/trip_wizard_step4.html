@@ -1,0 +1,82 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Step 4: Trip Summary</h3>
+        <span class="badge bg-primary rounded-pill">4 / 4</span>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <span class="badge bg-light text-dark">{{ trip.category|title }}</span>
+        <span class="badge bg-success">{{ trip.status|title }}</span>
+      </div>
+
+      <h4>{{ trip.title|default:trip.trip_name }}</h4>
+      <p class="mb-1"><strong>Destination:</strong> {{ trip.destination }}</p>
+      <p class="mb-1"><strong>Dates:</strong> {{ trip.start_date }} to {{ trip.end_date }}</p>
+      <p class="mb-0"><strong>Budget:</strong> ${{ trip.budget }}</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body p-4">
+          <h5>Flights</h5>
+          {% for flight in flights %}
+            <div class="border rounded p-3 mb-3">
+              <strong>{{ flight.airline }} {{ flight.flight_number }}</strong>
+              <p class="mb-1">{{ flight.departure_airport }} → {{ flight.arrival_airport }}</p>
+              <p class="mb-0 text-muted">Reference: {{ flight.booking_reference }}</p>
+            </div>
+          {% empty %}
+            <p class="text-muted mb-0">No flight details saved yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body p-4">
+          <h5>Hotels</h5>
+          {% for hotel in hotels %}
+            <div class="border rounded p-3 mb-3">
+              <strong>{{ hotel.hotel_name }}</strong>
+              <p class="mb-1">{{ hotel.location }}</p>
+              <p class="mb-0 text-muted">Check-in: {{ hotel.checkin_date }} / Check-out: {{ hotel.checkout_date }}</p>
+            </div>
+          {% empty %}
+            <p class="text-muted mb-0">No hotel details saved yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 mt-4">
+    <div class="card-body p-4">
+      <h5>AI itinerary</h5>
+      {% for item in itinerary %}
+        <div class="border rounded p-3 mb-3">
+          <strong>Day {{ item.day_number }}: {{ item.place_name }}</strong>
+          <p class="mb-0 mt-2 text-muted">{{ item.description }}</p>
+        </div>
+      {% empty %}
+        <p class="text-muted mb-0">No itinerary items were saved.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between mt-4">
+    <a href="{% url 'homepage:trip_wizard_step3' %}" class="btn btn-outline-secondary">Back</a>
+    <form method="post" action="{% url 'homepage:trip_wizard_finish' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-success">Finish & Go to Dashboard</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

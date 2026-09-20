@@ -1,0 +1,126 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Step 3: AI Itinerary & Map</h3>
+        <span class="badge bg-primary rounded-pill">3 / 4</span>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Generate AI Itinerary</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body p-4">
+          <h5 class="mb-3">Day-by-day itinerary</h5>
+          {% for item in itinerary %}
+            <div class="border rounded p-3 mb-3">
+              <strong>Day {{ item.day_number }}: {{ item.place_name }}</strong>
+              <p class="mb-0 mt-2 text-muted">{{ item.description }}</p>
+            </div>
+          {% empty %}
+            <p class="text-muted mb-0">No itinerary generated yet. Click the button above to create one.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body p-4">
+          <h5 class="mb-3">Nearby places</h5>
+          <div class="input-group mb-3">
+            <input type="text" name="query" value="{{ trip.destination|default:'' }}" placeholder="Search nearby places...">
+            <!-- <input id="map-search" type="text" class="form-control" placeholder="Search attractions, restaurants, or landmarks" value="{{ trip.destination }}"> -->
+            <button id="search-place" type="button" class="btn btn-primary">Search</button>
+          </div>
+          <div id="map" style="height: 420px; width: 100%; border-radius: 12px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between mt-4">
+    <a href="{% url 'homepage:trip_wizard_step2' %}" class="btn btn-outline-secondary">Back</a>
+    <a href="{% url 'homepage:trip_wizard_step4' %}" class="btn btn-primary">Next: Trip Summary</a>
+  </div>
+</div>
+<script>
+  let map;
+  let marker;
+  let savedPlaces = [];
+
+  function initMap() {
+    const center = { lat: 48.8566, lng: 2.3522 };
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: center,
+      zoom: 11,
+    });
+    
+    const searchButton = document.getElementById('search-place');
+    searchButton.addEventListener('click', function () {
+      const query = document.querySelector('input[name="query"]').value || '{{ trip.destination }}';
+      const service = new google.maps.places.PlacesService(map);
+
+      service.textSearch({ query: query }, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results.length) {
+          const place = results[0];
+          map.setCenter(place.geometry.location);
+          map.setZoom(13);
+
+          if (marker) marker.setMap(null);
+          marker = new google.maps.Marker({
+            map,
+            position: place.geometry.location,
+            title: place.name,
+          });
+
+          const infoWindow = new google.maps.InfoWindow({
+            content: `
+              <div>
+                <strong>${place.name}</strong><br>
+                <span>${place.formatted_address}</span><br>
+                <button type="button" class="btn btn-sm btn-primary mt-2" onclick="saveMapPlace('${place.name.replace(/'/g, "\\'")}', '${place.formatted_address.replace(/'/g, "\\'")}', ${place.geometry.location.lat()}, ${place.geometry.location.lng()})">Add to Trip</button>
+              </div>
+            `,
+          });
+
+          infoWindow.open(map, marker);
+        }
+      });
+    });
+  }
+
+  function saveMapPlace(name, address, lat, lng) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const formData = new FormData();
+    formData.append('place_name', name);
+    formData.append('description', address);
+    formData.append('latitude', lat);
+    formData.append('longitude', lng);
+
+    fetch('{% url "homepage:trip_wizard_save_place" %}', {
+      method: 'POST',
+      headers: { 'X-CSRFToken': csrfToken },
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Place saved to your trip itinerary.');
+        }
+      })
+      .catch(() => alert('Unable to save that place right now.'));
+  }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=places&callback=initMap" async defer></script>
+{% endblock %}
+

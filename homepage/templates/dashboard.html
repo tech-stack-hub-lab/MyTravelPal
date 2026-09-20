@@ -8,19 +8,24 @@
         <div class="hero-card">
           <div>
           <h2>
+           <div class="user-badge11">
           {% if user.is_premium %}
-          Premium
-          {% else %}
-          Free
-          {% endif %}
+           <i class="fas fa-star"></i>
+             <span>Premium Member</span>
+                 {% else %}
+                    <span ">Free</span>
+                  <a href="{% url 'payment:pricing' %}" class="btn btn-success">Add Subscription</a>
+              {% endif %}
+          </div>
+          
           </h2>
           <p>
-          {{ trip_count }} upcoming trips •
+          {{ trip_count }} trips •
           {{ flight_count }} flights booked
           </p>
           </div>
-
-          <a href="{% url 'homepage:trip_create' %}" class="btn btn-warning">
+         
+          <a href="{% url 'homepage:trip_wizard_step1' %}" class="btn btn-warning">
             Add Trip
           </a>
         </div>
@@ -45,17 +50,39 @@
             <h2>{{ trip_count }}</h2>
             <p>Trips</p>
           </div>
+        </section>
 
-          <div class="stat-card">
-            <i class="fas fa-star"></i>
-            <h2>
-              {% if user.is_premium %}
-              Premium
-              {% else %}
-              Free
-              {% endif %}
-            </h2>
-            <p>Membership</p>
+        <section class="trip-overview">
+          <div class="section-header">
+            <h3>My Trips</h3>
+            <a href="{% url 'homepage:trip_wizard_step1' %}" class="btn btn-sm btn-primary">New Trip</a>
+          </div>
+
+          <div class="trip-grid">
+            {% for trip in trips %}
+            <div class="trip-summary-card">
+              <div class="trip-summary-header">
+                <span class="trip-category">{{ trip.category|title }}</span>
+                <span class="trip-status {{ trip.status }}">{{ trip.status|title }}</span>
+              </div>
+              <h4>{{ trip.title|default:trip.trip_name }}</h4>
+              <p class="trip-location"><i class="fas fa-location-dot"></i> {{ trip.destination }}</p>
+              <p class="trip-dates">{{ trip.start_date }} to {{ trip.end_date }}</p>
+              <div class="trip-meta">
+                <span><i class="fas fa-plane"></i> {{ trip.flights.count }}</span>
+                <span><i class="fas fa-hotel"></i> {{ trip.hotels.count }}</span>
+              </div>
+              <div class="trip-actions">
+                <a href="{% url 'homepage:trip_detail' trip.id %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                <form method="post" action="{% url 'homepage:trip_delete' trip.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                </form>
+              </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-light w-100">No trips yet. Start by creating your first trip.</div>
+            {% endfor %}
           </div>
         </section>
 
@@ -63,56 +90,137 @@
           <!-- Trips -->
 
         <div class="left">
+              {% for bucket_key, bucket_title, bucket_trips in trip_sections %}
+                  <div class="mb-4">
+                      <h2>{{ bucket_title }}</h2>
 
-              <h2>Upcoming Trips</h2>
-
-              {% for trip in upcoming_trips %}
-
-              <div class="trip-card">
-
-                  <div class="trip-left">
-
-                      <div class="trip-icon">
-                          <i class="fas fa-globe"></i>
+                      {% for trip in bucket_trips %}
+                      <div class="trip-card">
+                          <div class="trip-left">
+                              <div class="trip-icon">
+                                  <i class="fas fa-globe"></i>
+                              </div>
+                              <div>
+                                  <h3>{{ trip.title|default:trip.trip_name|default:trip.destination }}</h3>
+                                  <p>
+                                      {{ trip.start_date|default:'Not decided' }}
+                                      -
+                                      {{ trip.end_date|default:'Not decided' }}
+                                  </p>
+                              </div>
+                          </div>
+                          <span class="badge success">
+                              {{ trip.status|default:'Not decided'|title }}
+                          </span>
                       </div>
-
-                      <div>
-                          <h3>{{ trip.destination }}</h3>
-
-                          <p>
-                              {{ trip.start_date }}
-                              -
-                              {{ trip.end_date }}
-                          </p>
+                      {% empty %}
+                      <div class="alert alert-light">
+                          No trips in this category yet.
                       </div>
-
+                      {% endfor %}
                   </div>
-
-                  <span class="badge success">
-                      Active
-                  </span>
-
-              </div>
-
-              {% empty %}
-
-              <div class="alert alert-light">
-                  No trips created yet.
-              </div>
-
               {% endfor %}
-
           </div>
 
           <!-- Right -->
 
           <div class="right">
             <div class="glass-card">
-              <h3>Travel Progress</h3>
-
-              <div class="progress-circle">
-                <span>{{ progress }}%</span>
+              <h3>Travel AI Suggestions</h3>
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
+    <h5 class="fw-bold text-primary mb-0">🤖 Travel AI Suggestions</h5>
+  </div>
+  <div class="card-body">
+    {% csrf_token %}
+    {% if ai_suggestions %}
+      {% for item in ai_suggestions %}
+        <div class="mb-3">
+          <h6 class="fw-bold text-dark mb-3">Tailored for: {{ item.trip_title }} ({{ item.destination }})</h6>
+          
+          <div class="d-flex flex-wrap gap-2">
+            {% if item.content.food %}
+              <div class="badge bg-light text-dark border p-2 fw-normal rounded-pill shadow-sm d-flex align-items-center gap-2">
+                <span><strong>🍕 Food:</strong> {{ item.content.food }}</span>
+                <button type="button" class="btn btn-sm btn-primary rounded-circle py-0 px-2 text-white border-0" 
+                        data-trip-id="{{ item.trip_id }}"
+                        data-title="🍕 {{ item.content.food|escapejs }}"
+                        data-category="Food"
+                        onclick="handleAiAddClick(this)" 
+                        title="Add to Trip">+</button>
               </div>
+            {% endif %}
+
+            {% if item.content.area %}
+              <div class="badge bg-light text-dark border p-2 fw-normal rounded-pill shadow-sm d-flex align-items-center gap-2">
+                <span><strong>🌆 Best Area:</strong> {{ item.content.area }}</span>
+                <button type="button" class="btn btn-sm btn-primary rounded-circle py-0 px-2 text-white border-0" 
+                        data-trip-id="{{ item.trip_id }}"
+                        data-title="🌆 {{ item.content.area|escapejs }}"
+                        data-category="Sightseeing"
+                        onclick="handleAiAddClick(this)" 
+                        title="Add to Trip">+</button>
+              </div>
+            {% endif %}
+
+            {% if item.content.shopping %}
+              <div class="badge bg-light text-dark border p-2 fw-normal rounded-pill shadow-sm d-flex align-items-center gap-2">
+                <span><strong>🛍️ Shopping:</strong> {{ item.content.shopping }}</span>
+                <button type="button" class="btn btn-sm btn-primary rounded-circle py-0 px-2 text-white border-0" 
+                        data-trip-id="{{ item.trip_id }}"
+                        data-title="🛍️ {{ item.content.shopping|escapejs }}"
+                        data-category="Shopping"
+                        onclick="handleAiAddClick(this)" 
+                        title="Add to Trip">+</button>
+              </div>
+            {% endif %}
+
+            {% if item.content.transit %}
+              <div class="badge bg-light text-dark border p-2 fw-normal rounded-pill shadow-sm d-flex align-items-center gap-2">
+                <span><strong>🚆 Transit:</strong> {{ item.content.transit }}</span>
+                <button type="button" class="btn btn-sm btn-primary rounded-circle py-0 px-2 text-white border-0" 
+                        data-trip-id="{{ item.trip_id }}"
+                        data-title="🚆 {{ item.content.transit|escapejs }}"
+                        data-category="Transit"
+                        onclick="handleAiAddClick(this)" 
+                        title="Add to Trip">+</button>
+              </div>
+            {% endif %}
+
+            {% if item.content.viewpoints %}
+              <div class="badge bg-light text-dark border p-2 fw-normal rounded-pill shadow-sm d-flex align-items-center gap-2">
+                <span><strong>📸 Viewpoints:</strong> {{ item.content.viewpoints }}</span>
+                <button type="button" class="btn btn-sm btn-primary rounded-circle py-0 px-2 text-white border-0" 
+                        data-trip-id="{{ item.trip_id }}"
+                        data-title="📸 {{ item.content.viewpoints|escapejs }}"
+                        data-category="Sightseeing"
+                        onclick="handleAiAddClick(this)" 
+                        title="Add to Trip">+</button>
+              </div>
+            {% endif %}
+
+            {% if item.content.religious %}
+              <div class="badge bg-light text-dark border p-2 fw-normal rounded-pill shadow-sm d-flex align-items-center gap-2">
+                <span><strong>🕌 Religious / Cultural:</strong> {{ item.content.religious }}</span>
+                <button type="button" class="btn btn-sm btn-primary rounded-circle py-0 px-2 text-white border-0" 
+                        data-trip-id="{{ item.trip_id }}"
+                        data-title="🕌 {{ item.content.religious|escapejs }}"
+                        data-category="Culture"
+                        onclick="handleAiAddClick(this)" 
+                        title="Add to Trip">+</button>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-muted small">
+        <p class="mb-0">Add a destination to your upcoming trips to get personalized AI travel suggestions!</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
             </div>
 
             <div class="glass-card">

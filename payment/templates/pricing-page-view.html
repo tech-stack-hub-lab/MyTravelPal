@@ -46,6 +46,7 @@
         
                    <form action="/checkout/" method="POST">
                         {% csrf_token %}
+                        <input type="hidden" name="price_id" value="{{ plans.premium.price }}">
                         <button type="submit" id="checkout-button" class="btn btn-primary">
                             Upgrade for $5
                         </button>

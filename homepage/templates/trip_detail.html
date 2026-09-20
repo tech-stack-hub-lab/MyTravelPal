@@ -41,7 +41,9 @@
       {% if trip.events.exists %}
         <ul>
           {% for event in trip.events.all %}
-            <li>{{ event.title }} | {{ event.start_datetime }} → {{ event.end_datetime }}</li>
+            <li>
+  {{ event.title|safe }} | {{ event.start_datetime }} → {{ event.end_datetime }}
+</li>
           {% endfor %}
         </ul>
       {% else %}

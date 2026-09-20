@@ -13,11 +13,16 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 import dj_database_url
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / '.env')
+for env_path in [BASE_DIR / '.env', BASE_DIR / '.env.example']:
+    if env_path.exists():
+        env_values = dotenv_values(env_path)
+        for key, value in env_values.items():
+            if key and value is not None and key not in os.environ:
+                os.environ[key] = value
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
@@ -38,7 +43,13 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'False'
 # DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'False'
 # ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 # CSRF_TRUSTED_ORIGINS = ["https://my-travel-pal-9b9eef6abc96.herokuapp.com", "http://localhost:8000", ]
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "my-travel-pal-9b9eef6abc96.herokuapp.com", "https://my-travel-pal-9b9eef6abc96.herokuapp.com"]
+ALLOWED_HOSTS = ["localhost:8081", "127.0.0.1:8081", "0.0.0.0", "my-travel-pal-9b9eef6abc96.herokuapp.com", "https://my-travel-pal-9b9eef6abc96.herokuapp.com"]
+
+# ALLOWED_HOSTS = [
+#     "localhost",
+#     "127.0.0.1",
+#     "0.0.0.0",
+# ]
 
 AUTH_USER_MODEL = 'homepage.User'
 
@@ -59,6 +70,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'extractor',
     'payment',
+  
 ]
 
 MIDDLEWARE = [
@@ -88,7 +100,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'payment.context_processors.subscription_plan',
-
             ],
         },
     },
@@ -178,9 +189,13 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Stripe configuration (set these in environment for production)
-STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')
-STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
-STRIPE_PRICE_ID = os.environ.get('STRIPE_PRICE_ID', '')
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_PRICE_ID = os.environ.get('STRIPE_PRICE_ID')
+
+# External service keys
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
+GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
 
 # OpenAI API key (set OPENAI_API_KEY in environment to enable advanced chatbot)
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')

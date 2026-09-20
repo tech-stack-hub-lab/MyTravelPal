@@ -213,6 +213,23 @@ The wireframes show desktop, tablet, and mobile layout structure with the update
 
 ![Wireframes](documents/image.png)
 
+## Testing
+
+Found 1 test(s).
+Creating test database for alias 'default'...
+System check identified some issues:
+
+WARNINGS:
+?: settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: settings.ACCOUNT_LOGIN_METHODS = {'email', 'username'}
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+
+System check identified 2 issues (0 silenced).
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.957s
+
+OK
+
 # ☁️ Deployment & Version Control (LO3)
 
 - Project is prepared for GitHub Pages deployment
