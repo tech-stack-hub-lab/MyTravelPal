@@ -24,16 +24,16 @@ from django.conf import settings
 from groq import Groq
 
 # Initialize client using environment variable or Django settings
-GROQ_API_KEY = getattr(settings, 'GROQ_API_KEY', os.getenv('GROQ_API_KEY', ''))
-client = Groq(api_key=GROQ_API_KEY)
+GROQ_API_KEY = (getattr(settings, 'GROQ_API_KEY', '') or os.getenv('GROQ_API_KEY', '') or '').strip()
+client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
 
 def _groq_client():
-    from openai import OpenAI
-    api_key = os.environ.get("GROQ_API_KEY")
+    api_key = (getattr(settings, 'GROQ_API_KEY', '') or os.environ.get("GROQ_API_KEY") or '').strip()
     if not api_key:
+        logger.warning("GROQ_API_KEY not set - skipping extraction.")
         return None
-    return OpenAI(api_key=api_key, base_url=GROQ_BASE_URL)
+    return Groq(api_key=api_key)
 
 
 def ask_travel_assistant(
