@@ -151,6 +151,7 @@ function showExtractedPreview(elementId, data) {
 }
 
 function autoPopulateFlightData(data) {
+  console.log('Flight Data:', data);
   const container = document.getElementById('flight-form-card');
   if (!container) return;
   showExtractedPreview('travel-extracted-preview', data);

@@ -41,9 +41,9 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'False'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'False'
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
-CSRF_TRUSTED_ORIGINS = ["https://my-travel-pal-9b9eef6abc96.herokuapp.com", "http://localhost:8000", ]
-# ALLOWED_HOSTS = ["localhost:8080", "127.0.0.1:8080", "0.0.0.0", "my-travel-pal-9b9eef6abc96.herokuapp.com", "https://my-travel-pal-9b9eef6abc96.herokuapp.com"]
+# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+# CSRF_TRUSTED_ORIGINS = ["https://my-travel-pal-9b9eef6abc96.herokuapp.com", "http://localhost:8000", ]
+ALLOWED_HOSTS = ["localhost:8080", "127.0.0.1:8080", "0.0.0.0", "my-travel-pal-9b9eef6abc96.herokuapp.com", "https://my-travel-pal-9b9eef6abc96.herokuapp.com"]
 
 # ALLOWED_HOSTS = [
 #     "localhost",
@@ -76,11 +76,11 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

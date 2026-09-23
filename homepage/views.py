@@ -10,12 +10,11 @@ import requests
 from django import forms
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponse, JsonResponse, request
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
@@ -30,11 +29,9 @@ from .forms import (
     HotelBookingForm,
     HotelDetailForm,
     TripForm,
-    TripUploadForm,
     TripWizardForm,
 )
 from .models import (
-    BookingImport,
     CalendarEvent,
     Flight,
     HotelBooking,
@@ -929,8 +926,8 @@ def trip_wizard_step2(request):
         "upload_form": upload_form,
         "flight_form": flight_form,
         "hotel_form": hotel_form,
-        "extracted_flight": json.dumps(request.session.get("extracted_flight", {})),
-        "extracted_hotel": json.dumps(request.session.get("extracted_hotel", {})),
+        "extracted_flight": request.session.get("extracted_flight", {}),
+        "extracted_hotel": request.session.get("extracted_hotel", {}),
         "hotel_search_results": hotel_search_results,
     }
     return render(request, "trip_wizard_step2.html", context)
@@ -1405,3 +1402,29 @@ def add_ai_suggestion_event(request):
     return JsonResponse({'success': True, 'event_id': event.id})
   except Exception as e:
     return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def profile(request):
+    return render(request, "profile.html")
+
+@login_required
+def activate_premium(request):
+    user = request.user
+
+    user.subscription_plan = "Premium"
+    user.subscription_status = "active"
+    user.billing_cycle = "monthly"
+
+    user.save()
+
+    return redirect("dashboard")
+
+@login_required
+def subscription_settings(request):
+    if request.method == "POST":
+        request.user.subscription_status = request.POST.get(
+            "subscription_status"
+        )
+        request.user.save()
+
+    return render(request, "subscription.html")

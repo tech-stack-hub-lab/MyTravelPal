@@ -4,7 +4,7 @@
 
 <div class="container mt-5">
 
-    <h1 class="text-center mb-3">Choose Your Plan</h1>
+    <h1 class="text-center mb-3">Choose Your Plan1{{ current_plan |default:"free" }}</h1>
     <p class="text-center mb-5">Choose a plan to unlock Premium features like priority itinerary building and advanced searches.</p>
     <div class="row">
 
@@ -37,20 +37,34 @@
 
                     <h3>{{ plans.premium.name }}</h3>
 
-                    <h1>${{ plans.premium.price }}</h1>
+                    <h1>$5</h1>
 
                     <ul class="list-unstyled">
                         <li>Unlimited Access</li>
                         <li>Priority itinerary generation, chat assistant, and advanced trip insights.</li>
                     </ul>
         
-                   <form action="/checkout/" method="POST">
+                   <!-- <form action="/checkout/" method="POST">
+
                         {% csrf_token %}
-                        <input type="hidden" name="price_id" value="{{ plans.premium.price }}">
+                        <input type="hidden" name="price_id" value="
+                        {{ plans.premium.price_id }}">
                         <button type="submit" id="checkout-button" class="btn btn-primary">
                             Upgrade for $5
                         </button>
                      
+                    </form> -->
+                    
+                    <form method="post" action="{% url 'payment:checkout' %}">
+                        {% csrf_token %}
+                        <input
+                            type="hidden"
+                            name="price_id"
+                            value="{{ plans.premium.price }}"
+                        >
+                        <button type="submit" class="btn btn-primary">
+                            Upgrade to Premium
+                        </button>
                     </form>
 
                 </div>

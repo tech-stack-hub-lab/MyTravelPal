@@ -22,17 +22,16 @@
           <div class="col-12 p-0">
             <div class="premium-topbar">
               <div class="brand-wrap">
-                <div class="brand-logo">
+                <a class="brand-logo" href="{% url 'homepage:dashboard' %}">
                   <i class="fas fa-paper-plane"></i>
                   <span>Travel Pal</span>
-                </div>
+                </a>
               </div>
 
               <div class="premium-user-block" aria-label="User info">
                 <h6 class="welcome-message">
                   Welcome, {{ user.get_full_name|default:user.username }}
                 </h6>
-                <span class="tier-badge premium">Premium</span>
               </div>
 
               <div class="topbar-actions">
@@ -43,53 +42,7 @@
             </div>
           </div>
         {% else %}
-          <div class="col-md-2 p-0">
-            <aside class="sidebar">
-              <div class="logo">
-                <i class="fas fa-paper-plane"></i>
-                <span>Travel Pal</span>
-              </div>
-
-              <ul class="nav-links">
-                <li class="active">
-                  <a href="{% url 'homepage:dashboard' %}">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="{% url 'homepage:trip_list' %}">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Create Trip</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="{% url 'homepage:flight_list' %}">
-                    <i class="fas fa-plane"></i>
-                    <span>Flights</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="{% url 'homepage:hotel_list' %}">
-                    <i class="fas fa-bed"></i>
-                    <span>Hotels</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="{% url 'homepage:event_list' %}">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Events</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="{% url 'extractor:upload_file' %}">
-                    <i class="fas fa-upload"></i>
-                    <span>Import Booking</span>
-                  </a>
-                </li>
-              </ul>
-            </aside>
-          </div>
+          
 
           <div class="col-md-10 p-0">
             <div class="content-topbar">
@@ -329,15 +282,7 @@ function handleAiAddClick(btn) {
     btn.innerHTML = originalText;
   });
 }
-function decodeHtmlEntities(text) {
-  const textArea = document.createElement('textarea');
-  textArea.innerHTML = text;
-  return textArea.value;
-}
-
-let cleanTitle = decodeHtmlEntities(rawTitle);
 </script>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/script.js' %}"></script>

@@ -248,4 +248,114 @@ def generate_trip_suggestions(
             "religious": "Visit historic cathedrals and ancient city temples",
         }
 
- 
+def _search_hotels(query, destination=''):
+    if not query:
+        return []
+
+    google_key = getattr(settings, 'GOOGLE_MAPS_API_KEY', None) or os.environ.get('GOOGLE_MAPS_API_KEY')
+    if google_key:
+        try:
+            search_term = f"{query} {destination}".strip()
+            response = requests.get(
+                'https://maps.googleapis.com/maps/api/place/textsearch/json',
+                params={'query': search_term, 'key': google_key, 'type': 'hotel'},
+                timeout=30,
+            )
+            response.raise_for_status()
+            results = response.json().get('results', [])
+            return [
+                {
+                    'name': item.get('name', 'Hotel'),
+                    'address': item.get('formatted_address', ''),
+                    'rating': item.get('rating', 0),
+                    'price_level': item.get('price_level', ''),
+                }
+                for item in results[:5]
+            ]
+        except Exception:
+            pass
+
+    return [
+        {'name': f'{query} Stay', 'address': destination or 'City center', 'rating': 4.5, 'price_level': '$$'},
+        {'name': f'{query} Boutique', 'address': f'{destination or "City"} downtown', 'rating': 4.7, 'price_level': '$$$'},
+        {'name': f'{query} Suites', 'address': f'{destination or "City"} business district', 'rating': 4.4, 'price_level': '$$'},
+    ]
+
+def _generate_ai_itinerary(trip):
+    api_key = getattr(settings, 'GROQ_API_KEY', None) or os.environ.get('GROQ_API_KEY')
+    if not api_key:
+        return [
+            {
+                'day_number': 1,
+                'place_name': f'Welcome to {trip.destination}',
+                'description': (
+                    f'Begin with a relaxed arrival in {trip.destination}, '
+                    'then explore the city center and enjoy a local dining experience.'
+                ),
+                'category': 'arrival',
+            },
+            {
+                'day_number': 2,
+                'place_name': 'Local Highlights',
+                'description': (
+                    'Visit the main attractions, browse local markets, and leave time '
+                    'for scenic walking or a short guided tour.'
+                ),
+                'category': 'attraction',
+            },
+        ]
+
+    prompt = (
+        f"Create a concise day-by-day itinerary for a {trip.category} trip to {trip.destination} "
+        f"from {trip.start_date} to {trip.end_date}. Budget is {trip.budget or 0}. "
+        "Return 3-5 days with title and short description for each day. "
+        "Format each day as: Day X: Place Name - Description."
+    )
+
+    try:
+        response = requests.post(
+            'https://api.groq.com/openai/v1/chat/completions',
+            headers={
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json',
+            },
+            json={
+                'model': 'llama-3.1-8b-instant',
+                'messages': [{'role': 'user', 'content': prompt}],
+                'temperature': 0.5,
+                'max_tokens': 500,
+            },
+            timeout=60,
+        )
+        response.raise_for_status()
+        content = response.json()['choices'][0]['message']['content']
+        items = []
+        day_blocks = re.split(r'(?=Day\s+\d+)', content)
+        for index, block in enumerate([b.strip() for b in day_blocks if b.strip()], start=1):
+            first_line = block.splitlines()[0].strip() if block.splitlines() else block
+            label = first_line[:120]
+            items.append({
+                'day_number': index,
+                'place_name': label,
+                'description': block,
+                'category': 'attraction',
+            })
+        if items:
+            return items
+    except Exception:
+        pass
+
+    return [
+        {
+            'day_number': 1,
+            'place_name': f'Arrival in {trip.destination}',
+            'description': 'Settle in, enjoy a local walk, and have dinner near your stay.',
+            'category': 'arrival',
+        },
+        {
+            'day_number': 2,
+            'place_name': 'City Highlights',
+            'description': 'Visit the most iconic attractions and a scenic neighborhood with time for photos.',
+            'category': 'attraction',
+        },
+    ]

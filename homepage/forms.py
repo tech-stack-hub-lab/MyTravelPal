@@ -8,8 +8,8 @@ class TripWizardForm(forms.ModelForm):
         model = Trip
         fields = [
             'title',
-            'destination',
             'category',
+            'destination',
             'start_date',
             'end_date',
             'budget',
@@ -17,9 +17,9 @@ class TripWizardForm(forms.ModelForm):
             'notes',
         ]
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Spring Europe Escape'}),
-            'destination': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Paris, France'}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
             'category': forms.Select(attrs={'class': 'form-select'}),
+            'destination': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Paris, France'}),
             'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'budget': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '0.01'}),
