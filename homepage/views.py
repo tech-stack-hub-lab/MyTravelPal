@@ -3,15 +3,17 @@ import io
 import json
 import os
 import re
-from datetime import date, datetime
+import html
+import datetime
+from django.utils import timezone
 from decimal import Decimal
-
 import requests
 from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required 
+from django.views.decorators.http import require_POST
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -306,7 +308,7 @@ def _call_groq_json(prompt):
         return json.loads(content)
     except Exception:
         return {}
-
+                                                                                                                                                                                                                                                                  
 
 def _normalize_extracted_payload(payload, aliases):
     normalized = {}
@@ -1363,49 +1365,165 @@ def virtual_assistant_chat(request):
     return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
 
 
+# @login_required
+# def add_ai_suggestion_event(request):
+#     if request.method != 'POST':
+#         return JsonResponse(
+#             {'error': 'Invalid method.'},
+#             status=400
+#         )
+
+#     try:
+#         data = json.loads(request.body)
+
+#         trip_id = data.get('trip_id')
+#         raw_title = data.get('title', '')
+#         category = data.get('category', 'Activity')
+
+#         # Convert HTML entities back to readable text
+#         title = html.unescape(raw_title)
+
+#         trip = get_object_or_404(
+#             Trip,
+#             id=trip_id,
+#             user=request.user
+#         )
+
+#         if trip.start_date:
+#             start_dt = timezone.make_aware(
+#                 datetime.combine(
+#                     trip.start_date,
+#                     datetime.min.time()
+#                 )
+#             )
+#         else:
+#             start_dt = timezone.now()
+
+#         end_dt = start_dt + timezone.timedelta(hours=2)
+
+#         event = CalendarEvent.objects.create(
+#             trip=trip,
+#             event_type=category,
+#             title=title,
+#             start_datetime=start_dt,
+#             end_datetime=end_dt,
+#             color_code='#3b82f6',
+#             is_event=True,  # if required in model
+#         )
+        
+#         return JsonResponse({
+#             'success': True,
+#             'event_id': event.id
+#         })
+
+#     except Exception as e:
+#         return JsonResponse(
+#             {'error': str(e)},
+#             status=500
+#         )
+
+
+
 @login_required
-def add_ai_suggestion_event(request):
-  if request.method != 'POST':
-    return JsonResponse({'error': 'Invalid method.'}, status=400)
-
-  try:
-    data = json.loads(request.body)
-    trip_id = data.get('trip_id')
-    raw_title = data.get('title', '')
-    category = data.get('category', 'Activity')
-
-    # Convert unicode escape sequences like \u0026 back to &
-    title = html.unescape(raw_title)
-
+def trip_detail_view(request, trip_id):
+    """
+    Renders the main page with AI suggestions and checks if each item 
+    has already been added to the user's CalendarEvent table.
+    """
     trip = get_object_or_404(Trip, id=trip_id, user=request.user)
 
-    if hasattr(trip, 'start_date') and trip.start_date:
-      start_dt = timezone.make_aware(
-          timezone.datetime.combine(
-              trip.start_date, timezone.datetime.min.time()
-          )
-      )
-    else:
-      start_dt = timezone.now()
-
-    end_dt = start_dt + timezone.timedelta(hours=2)
-
-    event = CalendarEvent.objects.create(
-        trip=trip,
-        event_type=category,
-        title=title,  # Cleaned title saved here
-        start_datetime=start_dt,
-        end_datetime=end_dt,
-        color_code='#3b82f6',
+    # Fetch all titles already added to this trip's calendar
+    existing_titles = set(
+        CalendarEvent.objects.filter(trip_id=trip_id).values_list('title', flat=True)
     )
 
-    return JsonResponse({'success': True, 'event_id': event.id})
-  except Exception as e:
-    return JsonResponse({'error': str(e)}, status=500)
+    # Example structure of AI suggestions (Fetch this from DB or AI Service)
+    raw_ai_suggestions = [
+        {
+            'trip_id': trip.id,
+            'trip_title': trip.title,
+            'destination': trip.destination,
+            'content': {
+                'food': 'Try Local Pizza & Pasta',
+                'area': 'Explore City Center & Old Town',
+                'shopping': 'Visit Local Farmers Market',
+                'transit': 'Use Central Metro Line',
+                'viewpoints': 'Panoramas from Sunset Hill',
+                'religious': 'Historical Cathedral Walk',
+            }
+        }
+    ]
+
+    # Map boolean checks for 'checked' persistence
+    ai_suggestions = []
+    for item in raw_ai_suggestions:
+        content = item.get('content', {})
+        
+        item_data = {
+            'trip_id': item['trip_id'],
+            'trip_title': item['trip_title'],
+            'destination': item['destination'],
+            'content': content,
+            'checks': {
+                'food_checked': f"🍕 {content.get('food')}" in existing_titles if content.get('food') else False,
+                'area_checked': f"🌆 {content.get('area')}" in existing_titles if content.get('area') else False,
+                'shopping_checked': f"🛍️ {content.get('shopping')}" in existing_titles if content.get('shopping') else False,
+                'transit_checked': f"🚆 {content.get('transit')}" in existing_titles if content.get('transit') else False,
+                'viewpoints_checked': f"📸 {content.get('viewpoints')}" in existing_titles if content.get('viewpoints') else False,
+                'religious_checked': f"🕌 {content.get('religious')}" in existing_titles if content.get('religious') else False,
+            }
+        }
+        ai_suggestions.append(item_data)
+
+    return render(request, 'trip_detail.html', {'ai_suggestions': ai_suggestions})
+
+
+@login_required
+@require_POST
+def add_ai_suggestion_event(request):
+    try:
+        data = json.loads(request.body)
+        trip_id = data.get('trip_id')
+        title = data.get('title')
+        category = data.get('category')
+
+        if not trip_id or not title:
+            return JsonResponse({'success': False, 'error': 'Invalid data provided.'}, status=400)
+
+        already_exists = CalendarEvent.objects.filter(
+            trip_id=trip_id,
+            title=title
+        ).exists()
+
+        if already_exists:
+            return JsonResponse({'success': False, 'already_added': True, 'error': 'Already added!'})
+
+        # Fetch Trip to get trip dates OR set default time
+        trip = get_object_or_404(Trip, id=trip_id, user=request.user)
+        
+        # Default Start Time: Trip Start Date or Today
+        start_dt = trip.start_date if hasattr(trip, 'start_date') and trip.start_date else timezone.now()
+        # Default End Time: 2 hours after start_dt
+        end_dt = start_dt + datetime.timedelta(hours=2)
+
+        CalendarEvent.objects.create(
+            trip_id=trip_id,
+            title=title,
+            event_type=category,
+            start_datetime=start_dt,
+            end_datetime=end_dt
+        )
+
+        return JsonResponse({'success': True})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
 
 @login_required
 def profile(request):
     return render(request, "profile.html")
+
 
 @login_required
 def activate_premium(request):

@@ -264,6 +264,7 @@ class CalendarEvent(models.Model):
     end_datetime = models.DateTimeField()
     color_code = models.CharField(max_length=20, default='#3b82f6')
     created_at = models.DateTimeField(auto_now_add=True)
+    checked = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title

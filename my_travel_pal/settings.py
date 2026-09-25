@@ -37,12 +37,12 @@ STATICFILES_DIR = os.path.join(BASE_DIR, 'static')
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'False'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'False'
 # ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
-# CSRF_TRUSTED_ORIGINS = ["https://my-travel-pal-9b9eef6abc96.herokuapp.com", "http://localhost:8000", ]
+CSRF_TRUSTED_ORIGINS = ["https://my-travel-pal-9b9eef6abc96.herokuapp.com", "http://localhost:8000", ]
 ALLOWED_HOSTS = ["localhost:8080", "127.0.0.1:8080", "0.0.0.0", "my-travel-pal-9b9eef6abc96.herokuapp.com", "https://my-travel-pal-9b9eef6abc96.herokuapp.com"]
 
 # ALLOWED_HOSTS = [

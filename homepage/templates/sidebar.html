@@ -245,11 +245,16 @@ function handleAiAddClick(btn) {
     return;
   }
 
+  // Read selected date values
+  const startDatetime = document.getElementById('event_start_datetime')?.value || null;
+  const endDatetime = document.getElementById('event_end_datetime')?.value || null;
+
   const originalText = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '...';
 
-  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+  const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+  const csrfToken = csrfInput ? csrfInput.value : '';
 
   fetch("{% url 'homepage:add_ai_suggestion_event' %}", {
     method: 'POST',
@@ -260,23 +265,32 @@ function handleAiAddClick(btn) {
     body: JSON.stringify({
       trip_id: tripId,
       title: title,
-      category: category
+      category: category,
+      start_datetime: startDatetime,
+      end_datetime: endDatetime
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
+  .then(async (res) => {
+    const contentType = res.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error('Server returned HTML instead of JSON.');
+    }
+    return res.json();
+  })
+  .then((data) => {
+    if (data.success || data.already_added) {
       btn.classList.remove('btn-primary');
       btn.classList.add('btn-success');
       btn.innerHTML = '✓';
+      btn.disabled = true;
     } else {
       alert(data.error || 'Failed to add item.');
       btn.disabled = false;
       btn.innerHTML = originalText;
     }
   })
-  .catch(err => {
-    console.error(err);
+  .catch((err) => {
+    console.error('Fetch error:', err);
     alert('Network error.');
     btn.disabled = false;
     btn.innerHTML = originalText;
