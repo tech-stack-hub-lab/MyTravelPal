@@ -10,6 +10,8 @@ import json
 import logging
 import mimetypes
 import os
+from django.conf import settings
+from groq import Groq
 
 logger = logging.getLogger(__name__)
 
@@ -19,9 +21,7 @@ GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 # Current Groq models (2026) - llama-3.3-70b-versatile is Enterprise-only now.
 TEXT_MODEL_CANDIDATES = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"]
 VISION_MODEL_CANDIDATES = ["qwen/qwen3.6-27b", "meta-llama/llama-4-maverick-17b-128e-instruct"]
-import os
-from django.conf import settings
-from groq import Groq
+
 
 # Initialize client using environment variable or Django settings
 GROQ_API_KEY = (getattr(settings, 'GROQ_API_KEY', '') or os.getenv('GROQ_API_KEY', '') or '').strip()
@@ -282,7 +282,10 @@ def _search_hotels(query, destination=''):
     ]
 
 def _generate_ai_itinerary(trip):
+    """Generates a day-by-day itinerary for a trip using Groq LLM."""
+
     api_key = getattr(settings, 'GROQ_API_KEY', None) or os.environ.get('GROQ_API_KEY')
+    
     if not api_key:
         return [
             {
@@ -304,13 +307,33 @@ def _generate_ai_itinerary(trip):
                 'category': 'attraction',
             },
         ]
+    saved_places = list(
+                trip.itineraries.filter(
+                    category='map_place'
+                ).values_list(
+                    'place_name',
+                    flat=True
+                )
+            )
+    nearby_places_text = "\n".join(saved_places)
+    prompt = f"""
+            Create a day wise itinerary.
 
-    prompt = (
-        f"Create a concise day-by-day itinerary for a {trip.category} trip to {trip.destination} "
-        f"from {trip.start_date} to {trip.end_date}. Budget is {trip.budget or 0}. "
-        "Return 3-5 days with title and short description for each day. "
-        "Format each day as: Day X: Place Name - Description."
-    )
+            Destination:
+            {trip.destination}
+
+            Selected places:
+            {nearby_places_text}
+
+            Use these places in itinerary.
+            Group attractions logically by day.
+            """
+    # prompt = (
+    #     f"Create a concise day-by-day itinerary for a {trip.category} trip to {trip.destination} "
+    #     f"from {trip.start_date} to {trip.end_date}. Budget is {trip.budget or 0}. "
+    #     "Return 3-5 days with title and short description for each day. "
+    #     "Format each day as: Day X: Place Name - Description."
+    # )
 
     try:
         response = requests.post(

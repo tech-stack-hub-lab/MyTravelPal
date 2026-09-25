@@ -37,10 +37,21 @@
       <div class="card shadow-sm border-0 h-100">
         <div class="card-body p-4">
           <h5 class="mb-3">Nearby places</h5>
+  
           <div class="input-group mb-3">
-            <input type="text" name="query" value="{{ trip.destination|default:'' }}" placeholder="Search nearby places...">
-            <!-- <input id="map-search" type="text" class="form-control" placeholder="Search attractions, restaurants, or landmarks" value="{{ trip.destination }}"> -->
-            <button id="search-place" type="button" class="btn btn-primary">Search</button>
+   
+                    <input
+    id="map-search"
+    type="text"
+    class="form-control"
+    placeholder="Search destination" value="{{ trip.destination|default:'' }}" >
+
+<button
+    id="search-place"
+    type="button"
+    class="btn btn-primary">
+    Search
+</button>
           </div>
           <div id="map" style="height: 420px; width: 100%; border-radius: 12px;"></div>
         </div>
@@ -53,74 +64,199 @@
     <a href="{% url 'homepage:trip_wizard_step4' %}" class="btn btn-primary">Next: Trip Summary</a>
   </div>
 </div>
+
+
 <script>
-  let map;
-  let marker;
-  let savedPlaces = [];
+let map;
 
-  function initMap() {
-    const center = { lat: 48.8566, lng: 2.3522 };
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: center,
-      zoom: 11,
-    });
-    
-    const searchButton = document.getElementById('search-place');
-    searchButton.addEventListener('click', function () {
-      const query = document.querySelector('input[name="query"]').value || '{{ trip.destination }}';
-      const service = new google.maps.places.PlacesService(map);
+window.initMap = function () {
 
-      service.textSearch({ query: query }, (results, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && results.length) {
-          const place = results[0];
-          map.setCenter(place.geometry.location);
-          map.setZoom(13);
-
-          if (marker) marker.setMap(null);
-          marker = new google.maps.Marker({
-            map,
-            position: place.geometry.location,
-            title: place.name,
-          });
-
-          const infoWindow = new google.maps.InfoWindow({
-            content: `
-              <div>
-                <strong>${place.name}</strong><br>
-                <span>${place.formatted_address}</span><br>
-                <button type="button" class="btn btn-sm btn-primary mt-2" onclick="saveMapPlace('${place.name.replace(/'/g, "\\'")}', '${place.formatted_address.replace(/'/g, "\\'")}', ${place.geometry.location.lat()}, ${place.geometry.location.lng()})">Add to Trip</button>
-              </div>
-            `,
-          });
-
-          infoWindow.open(map, marker);
+    map = new google.maps.Map(
+        document.getElementById("map"),
+        {
+            center: {
+                lat: 48.8566,
+                lng: 2.3522
+            },
+            zoom: 11
         }
-      });
-    });
-  }
+    );
 
-  function saveMapPlace(name, address, lat, lng) {
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    document
+        .getElementById("search-place")
+        .addEventListener(
+            "click",
+            searchPlaces
+        );
+};
+
+function searchPlaces() {
+
+    const query =
+        document.getElementById(
+            "map-search"
+        ).value;
+
+    if (!query) {
+        alert("Enter a destination");
+        return;
+    }
+
+    const service =
+        new google.maps.places.PlacesService(
+            map
+        );
+
+    service.textSearch(
+        {
+            query: query
+        },
+        function(results, status) {
+
+            if (
+                status !==
+                google.maps.places
+                .PlacesServiceStatus.OK
+            ) {
+                alert(
+                    "Location not found"
+                );
+                return;
+            }
+
+            const place = results[0];
+
+            map.setCenter(
+                place.geometry.location
+            );
+
+            map.setZoom(13);
+
+            loadNearbyAttractions(
+                place.geometry.location
+            );
+        }
+    );
+}
+
+function loadNearbyAttractions(location) {
+
+    const service =
+        new google.maps.places.PlacesService(
+            map
+        );
+
+    service.nearbySearch(
+        {
+            location: location,
+            radius: 5000,
+            type: "tourist_attraction"
+        },
+        function(results, status) {
+
+            if (
+                status !==
+                google.maps.places
+                .PlacesServiceStatus.OK
+            ) {
+                return;
+            }
+
+            results.forEach(function(place) {
+
+                const marker =
+                    new google.maps.Marker({
+                        position:
+                            place.geometry.location,
+                        map: map,
+                        title: place.name
+                    });
+
+                const infoWindow =
+                    new google.maps.InfoWindow({
+                        content: `
+                            <div>
+                                <strong>${place.name}</strong>
+                                <br>
+                                ${place.vicinity || ""}
+
+                                <br><br>
+
+                                <button
+                                  onclick="
+                                  saveMapPlace(
+                                    '${place.name.replace(/'/g,"\\'")}',
+                                    '${(place.vicinity || "").replace(/'/g,"\\'")}',
+                                    ${place.geometry.location.lat()},
+                                    ${place.geometry.location.lng()}
+                                  )">
+
+                                  Add To Trip
+                                </button>
+                            </div>
+                        `
+                    });
+
+                marker.addListener(
+                    "click",
+                    () => infoWindow.open(
+                        map,
+                        marker
+                    )
+                );
+            });
+        }
+    );
+}
+
+window.saveMapPlace = function (
+    name,
+    address,
+    lat,
+    lng
+) {
+
+    const csrfToken =
+        document.querySelector(
+            '[name=csrfmiddlewaretoken]'
+        ).value;
+
     const formData = new FormData();
+
     formData.append('place_name', name);
     formData.append('description', address);
     formData.append('latitude', lat);
     formData.append('longitude', lng);
 
-    fetch('{% url "homepage:trip_wizard_save_place" %}', {
-      method: 'POST',
-      headers: { 'X-CSRFToken': csrfToken },
-      body: formData,
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Place saved to your trip itinerary.');
+    fetch(
+        '{% url "homepage:trip_wizard_save_place" %}',
+        {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
         }
-      })
-      .catch(() => alert('Unable to save that place right now.'));
-  }
+    )
+    .then(r => r.json())
+    .then(data => {
+
+        if (data.success) {
+
+            alert('Place saved successfully');
+
+            location.reload();
+        }
+    })
+    .catch(err => {
+        console.error(err);
+    });
+};
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=places&callback=initMap" async defer></script>
+<script
+src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=places&callback=initMap"
+async
+defer>
+</script>
 {% endblock %}
 

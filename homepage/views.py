@@ -4,8 +4,7 @@ import json
 import os
 import re
 import html
-import datetime
-from django.utils import timezone
+from datetime import date, datetime
 from decimal import Decimal
 import requests
 from django import forms
@@ -973,7 +972,9 @@ def trip_wizard_step3(request):
 
     if request.method == 'POST':
         generated = _generate_ai_itinerary(trip)
-        trip.itineraries.all().delete()
+        trip.itineraries.exclude(
+            category='map_place'
+            ).delete()
         for item in generated:
             ItineraryItem.objects.create(
                 trip=trip,
@@ -1088,7 +1089,11 @@ def trip_wizard_save_place(request):
             latitude=latitude_value,
             longitude=longitude_value,
         )
-
+    print(
+        "PLACE SAVED:",
+        item.place_name
+        if item.place_name
+        else f"Lat: {item.latitude}, Lon: {item.longitude}",)
     return JsonResponse({'success': True, 'id': item.id, 'place_name': item.place_name})
 
 
@@ -1104,7 +1109,8 @@ def trip_delete(request, trip_id):
 @login_required
 def trip_detail(request, trip_id):
     trip = get_object_or_404(Trip, id=trip_id, user=request.user)
-    return render(request, 'trip_detail.html', {'trip': trip})
+    itinerary = trip.itineraries.order_by('day_number')
+    return render(request, 'trip_detail.html', {'trip': trip, 'itinerary': itinerary})
 
 
 @login_required

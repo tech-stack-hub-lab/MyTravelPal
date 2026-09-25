@@ -82,5 +82,31 @@
       </iframe>
     </div>
   </div>
+  <div class="card mt-4">
+    <div class="card-body">
+
+        <h5>Saved Itinerary</h5>
+
+        {% for item in itinerary %}
+
+            <div class="mb-3">
+
+                <strong>
+                    {{ item.place_name }}
+                </strong>
+
+                <br>
+
+                {{ item.description }}
+
+            </div>
+
+        {% empty %}
+
+            <p>No itinerary items found.</p>
+
+        {% endfor %}
+    </div>
+</div>
 </section>
 {% endblock %}
