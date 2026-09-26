@@ -1,3 +1,4 @@
+
 import io
 import json
 import os
@@ -55,7 +56,6 @@ class RegistrationForm(forms.ModelForm):
         model = get_user_model()
         fields = ['username', 'email']
 
-    # Validates that both password input fields match
     def clean(self):
         cleaned_data = super().clean()
         password1 = cleaned_data.get('password1')
@@ -66,7 +66,6 @@ class RegistrationForm(forms.ModelForm):
 
         return cleaned_data
 
-    # Creates and saves a new user instance with the hashed password
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
@@ -76,13 +75,11 @@ class RegistrationForm(forms.ModelForm):
         return user
 
 
-# Renders the landing home page with view caching enabled
 @cache_page(20)
 def index(request):
     return render(request, 'index.html')
 
 
-# Extracts plain text or OCR content from uploaded PDF/image files
 def _extract_text_from_upload(uploaded_file):
     if uploaded_file is None:
         return ''
@@ -147,7 +144,6 @@ def _extract_text_from_upload(uploaded_file):
             return ''
 
 
-# Attempts to match regular expression patterns sequentially against a string
 def _safe_match(patterns, text):
     for pattern in patterns:
         match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
@@ -158,7 +154,6 @@ def _safe_match(patterns, text):
     return ''
 
 
-# Sanitizes and validates extracted booking reference strings
 def _clean_booking_reference(value):
     if value in (None, ''):
         return ''
@@ -180,7 +175,6 @@ def _clean_booking_reference(value):
     return ''
 
 
-# Sanitizes and normalizes airport code or name strings
 def _clean_airport_value(value):
     if value in (None, ''):
         return ''
@@ -211,7 +205,6 @@ def _clean_airport_value(value):
     return ''
 
 
-# Cleans unwanted prefix terms and spaces from title values
 def _clean_title_value(value):
     if value in (None, ''):
         return ''
@@ -230,7 +223,6 @@ def _clean_title_value(value):
     return cleaned
 
 
-# Parses date or datetime inputs into standard ISO format strings
 def _normalize_iso_value(value):
     if value in (None, ''):
         return ''
@@ -268,7 +260,6 @@ def _normalize_iso_value(value):
     return text
 
 
-# Recursively converts non-serializable objects for Django session storage
 def _json_safe_session_value(value):
     if isinstance(value, Decimal):
         return float(value)
@@ -281,7 +272,6 @@ def _json_safe_session_value(value):
     return value
 
 
-# Calls Groq API to extract structured JSON data from text prompts
 def _call_groq_json(prompt):
     api_key = getattr(settings, 'GROQ_API_KEY', None) or os.environ.get('GROQ_API_KEY')
     if not api_key:
@@ -321,7 +311,6 @@ def _call_groq_json(prompt):
         return {}
                                                                                                                                                                                                                                                                   
 
-# Maps extracted dictionary payload keys to expected field aliases
 def _normalize_extracted_payload(payload, aliases):
     normalized = {}
     for form_name, candidate_keys in aliases.items():
@@ -349,7 +338,6 @@ def _normalize_extracted_payload(payload, aliases):
     return normalized
 
 
-# Extracts flight details using Groq API or regex fallback parsing
 def _extract_flight_details(raw_text):
     llm_prompt = (
         "Extract the most important travel booking details from this document as valid JSON only. "
@@ -437,7 +425,6 @@ def _extract_flight_details(raw_text):
     return fallback
 
 
-# Extracts hotel reservation details using Groq API or regex fallbacks
 def _extract_hotel_details(raw_text):
     llm_prompt = (
         "Extract hotel booking details from this document as valid JSON only. "
@@ -493,7 +480,6 @@ def _extract_hotel_details(raw_text):
     return fallback
 
 
-# Queries Google Places API for hotels or returns default options
 def _search_hotels(query, destination=''):
     if not query:
         return []
@@ -528,7 +514,6 @@ def _search_hotels(query, destination=''):
     ]
 
 
-# Generates an AI itinerary breakdown using Groq LLM completion
 def _generate_ai_itinerary(trip):
     api_key = getattr(settings, 'GROQ_API_KEY', None) or os.environ.get('GROQ_API_KEY')
     if not api_key:
@@ -609,7 +594,6 @@ def _generate_ai_itinerary(trip):
     ]
 
 
-# Displays user overview metrics, trips grouped by status, and AI travel tips
 @login_required
 def dashboard(request):
     trips = Trip.objects.filter(user=request.user).order_by('-created_at')
@@ -684,7 +668,6 @@ def dashboard(request):
     }
     return render(request, 'dashboard.html', context)
 
-# Handles basic trip details creation or editing in step 1 of the trip wizard
 @login_required
 def trip_wizard_step1(request):
     trip_id = request.session.get('trip_wizard_trip_id')
@@ -708,7 +691,9 @@ def trip_wizard_step1(request):
     return render(request, 'trip_wizard_step1.html', {'form': form})
 
 
-# Creates or updates a flight object matching booking details for a given trip
+# If you have a place-search helper already, import it here, e.g.:
+# from utils.places import search_places
+
 def _upsert_flight_for_trip(trip, flight_data):
     if not flight_data:
         return None
@@ -768,7 +753,6 @@ def _upsert_flight_for_trip(trip, flight_data):
     return flight
 
 
-# Creates or updates a hotel booking entry for a given trip
 def _upsert_hotel_for_trip(trip, hotel_data):
     if not hotel_data:
         return None
@@ -820,7 +804,6 @@ def _upsert_hotel_for_trip(trip, hotel_data):
     return hotel
 
 
-# Creates or updates an itinerary entry for a specified trip
 def _upsert_itinerary_item_for_trip(trip, item_data):
     if not item_data or not isinstance(item_data, dict):
         return None
@@ -857,7 +840,6 @@ def _upsert_itinerary_item_for_trip(trip, item_data):
     )
 
 
-# Persists temporary wizard session data for flights, hotels, and itineraries into the database
 def _save_pending_trip_wizard_data(trip, request):
     if trip is None:
         return
@@ -881,7 +863,6 @@ def _save_pending_trip_wizard_data(trip, request):
     request.session.pop('trip_wizard_pending_itinerary', None)
 
 
-# Manages document uploads, automated extraction, and search during trip wizard step 2
 @login_required
 def trip_wizard_step2(request):
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
@@ -955,7 +936,6 @@ def trip_wizard_step2(request):
     return render(request, "trip_wizard_step2.html", context)
 
 
-# Saves an uploaded file temporarily, executes an extractor function, and cleans up
 def _extract_uploaded_file(uploaded_file, extractor_fn):
     """Write the in-memory upload to a temp file, run extraction, clean up."""
     suffix = "." + uploaded_file.name.rsplit(".", 1)[-1] if "." in uploaded_file.name else ""
@@ -969,7 +949,6 @@ def _extract_uploaded_file(uploaded_file, extractor_fn):
         os.unlink(tmp_path)
 
 
-# Saves an uploaded file temporarily, executes an extractor function, and cleans up
 def _extract_uploaded_file(uploaded_file, extractor_fn):
     """Write the in-memory upload to a temp file, run extraction, clean up."""
     suffix = "." + uploaded_file.name.rsplit(".", 1)[-1] if "." in uploaded_file.name else ""
@@ -984,7 +963,6 @@ def _extract_uploaded_file(uploaded_file, extractor_fn):
         os.unlink(tmp_path)
 
 
-# Handles AI itinerary generation and preview during trip wizard step 3
 @login_required
 def trip_wizard_step3(request):
     trip_id = request.session.get('trip_wizard_trip_id')
@@ -1021,7 +999,6 @@ def trip_wizard_step3(request):
     )
 
 
-# Renders the summary review page before finalizing the trip creation wizard
 @login_required
 def trip_wizard_step4(request):
     trip_id = request.session.get('trip_wizard_trip_id')
@@ -1051,7 +1028,6 @@ def trip_wizard_step4(request):
     )
 
 
-# Saves all trip wizard data, clears session cache, and redirects to dashboard
 @login_required
 def trip_wizard_finish(request):
     trip_id = request.session.get('trip_wizard_trip_id')
@@ -1072,7 +1048,6 @@ def trip_wizard_finish(request):
     return redirect('homepage:dashboard')
 
 
-# Adds a map place pin to a trip's itinerary via an AJAX endpoint
 @login_required
 def trip_wizard_save_place(request):
     if request.method != 'POST':
@@ -1124,7 +1099,6 @@ def trip_wizard_save_place(request):
     return JsonResponse({'success': True, 'id': item.id, 'place_name': item.place_name})
 
 
-# Removes a specified trip instance owned by the current user
 @login_required
 def trip_delete(request, trip_id):
     trip = get_object_or_404(Trip, id=trip_id, user=request.user)
@@ -1134,7 +1108,19 @@ def trip_delete(request, trip_id):
     return redirect('homepage:dashboard')
 
 
-# Renders detailed trip information, forms, and connected schedule items
+# @login_required
+# def trip_detail(request, trip_id):
+#     trip = get_object_or_404(Trip, id=trip_id, user=request.user)
+#     if request.method == 'POST':
+#         form = TripUpdateForm(request.POST, instance=trip)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Trip details updated successfully!')
+#             return redirect('trip_detail', trip_id=trip.id)
+#     else:
+#         form = TripUpdateForm(instance=trip)
+#     itinerary = trip.itineraries.order_by('day_number')
+#     return render(request, 'trip_detail.html', {'form': form, 'trip': trip, 'itinerary': itinerary})
 def trip_detail(request, trip_id):
     trip = get_object_or_404(Trip, id=trip_id, user=request.user)
 
@@ -1152,7 +1138,6 @@ def trip_detail(request, trip_id):
     flights = trip.flights.all() if hasattr(trip, 'flights') else []
     hotels = trip.hotels.all() if hasattr(trip, 'hotels') else []
     itinerary = trip.itinerary_items.all() if hasattr(trip, 'itinerary_items') else []
-    uploads = trip.uploads.all() if hasattr(trip, 'uploads') else []  # <-- Add this line (or use related_name)
 
     return render(request, 'trip_detail.html', {
         'trip': trip,
@@ -1161,11 +1146,9 @@ def trip_detail(request, trip_id):
         'flights': flights,
         'hotels': hotels,
         'itinerary': itinerary,
-        'uploads': uploads,
     })
 
 
-# Displays a list view of all trips for the logged-in user
 @login_required
 def trip_list(request):
  
@@ -1180,7 +1163,6 @@ def trip_list(request):
     )
  
  
-# Handles creation of new trips using the base TripForm
 @login_required
 def trip_create(request):
  
@@ -1212,7 +1194,6 @@ def trip_create(request):
     )
 
 
-# Manages creation of new flight entries for a user's trip
 @login_required
 def flight_create(request):
     form = FlightForm(request.POST or None, user=request.user)
@@ -1228,7 +1209,6 @@ def flight_create(request):
     return render(request, 'flight_form.html', {'form': form})
 
 
-# Handles creation of new hotel booking entries
 @login_required
 def hotel_create(request):
     form = HotelBookingForm(request.POST or None, user=request.user)
@@ -1244,7 +1224,6 @@ def hotel_create(request):
     return render(request, 'hotel_form.html', {'form': form})
 
 
-# Lists all calendar events associated with the logged-in user
 @login_required
 def event_list(request):
  
@@ -1261,7 +1240,6 @@ def event_list(request):
     )
  
  
-# Handles creation of new calendar events
 @login_required
 def event_create(request):
  
@@ -1286,8 +1264,6 @@ def event_create(request):
             "form": form
         }
     )
-
-# Returns JSON-formatted list of user calendar events for calendar widgets
 @login_required
 def calendar_events(request):
  
@@ -1312,7 +1288,6 @@ def calendar_events(request):
     )
 
 
-# Authenticates and logs in existing user accounts
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -1326,7 +1301,6 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 
-# Registers new user accounts and automatically logs them in
 def register_view(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -1340,14 +1314,12 @@ def register_view(request):
 
     return render(request, 'register.html', {'form': form})
 
-# Logs out current user and clears session state
 @login_required
 def logout_view(request):
     logout(request)
     request.session.flush()
     return redirect('homepage:index')
 
-# Handles incoming chat API messages with rule-based or OpenAI responses
 @csrf_exempt
 def chat_api(request):
     """Simple chatbot API: accepts JSON POST {message} and returns JSON {reply}.
@@ -1402,7 +1374,7 @@ def chat_api(request):
     return JsonResponse({'reply': reply})
 
 
-# Processes virtual assistant requests for active Premium subscribers
+# tasks.py (or management command run daily)
 @login_required
 def virtual_assistant_chat(request):
   if request.method != 'POST':
@@ -1435,7 +1407,65 @@ def virtual_assistant_chat(request):
     return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
 
 
-# Prepares trip details view and checks active AI suggestions against existing calendar events
+# @login_required
+# def add_ai_suggestion_event(request):
+#     if request.method != 'POST':
+#         return JsonResponse(
+#             {'error': 'Invalid method.'},
+#             status=400
+#         )
+
+#     try:
+#         data = json.loads(request.body)
+
+#         trip_id = data.get('trip_id')
+#         raw_title = data.get('title', '')
+#         category = data.get('category', 'Activity')
+
+#         # Convert HTML entities back to readable text
+#         title = html.unescape(raw_title)
+
+#         trip = get_object_or_404(
+#             Trip,
+#             id=trip_id,
+#             user=request.user
+#         )
+
+#         if trip.start_date:
+#             start_dt = timezone.make_aware(
+#                 datetime.combine(
+#                     trip.start_date,
+#                     datetime.min.time()
+#                 )
+#             )
+#         else:
+#             start_dt = timezone.now()
+
+#         end_dt = start_dt + timezone.timedelta(hours=2)
+
+#         event = CalendarEvent.objects.create(
+#             trip=trip,
+#             event_type=category,
+#             title=title,
+#             start_datetime=start_dt,
+#             end_datetime=end_dt,
+#             color_code='#3b82f6',
+#             is_event=True,  # if required in model
+#         )
+        
+#         return JsonResponse({
+#             'success': True,
+#             'event_id': event.id
+#         })
+
+#     except Exception as e:
+#         return JsonResponse(
+#             {'error': str(e)},
+#             status=500
+#         )
+
+
+
 @login_required
 def trip_detail_view(request, trip_id):
     """
@@ -1490,7 +1520,6 @@ def trip_detail_view(request, trip_id):
     return render(request, 'trip_detail.html', {'ai_suggestions': ai_suggestions})
 
 
-# Converts AI suggestion entries into saved CalendarEvent records via POST requests
 @login_required
 @require_POST
 def add_ai_suggestion_event(request):
@@ -1564,13 +1593,11 @@ def add_ai_suggestion_event(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
-# Renders user profile information page
 @login_required
 def profile(request):
     return render(request, "profile.html")
 
 
-# Upgrades current user subscription plan to Premium status
 @login_required
 def activate_premium(request):
     user = request.user
@@ -1583,7 +1610,6 @@ def activate_premium(request):
 
     return redirect("dashboard")
 
-# Manages and updates subscription plan settings for the user
 @login_required
 def subscription_settings(request):
     if request.method == "POST":
@@ -1593,3 +1619,5 @@ def subscription_settings(request):
         request.user.save()
 
     return render(request, "subscription.html")
+
+

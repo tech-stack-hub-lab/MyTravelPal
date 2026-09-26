@@ -127,7 +127,7 @@ a.logo {
     display:inline-block;
     border:1px solid rgba(212,170,79,.4);
     background:rgba(212,170,79,.08);
-    color:var(--gold);
+    color:#fff !important;
     padding:8px 18px;
     border-radius:999px;
     margin-bottom:35px;
@@ -310,8 +310,8 @@ a.logo {
   border-radius: 999px;
   background: rgba(212, 78, 96, 0.15);
   border: 1px solid rgba(212, 78, 96, 0.35);
-  color: #ff8ea0;
-  font-size: 14px;
+  color: #fff !important;
+  font-size: 18px !important;
   font-weight: 600;
 }
 
@@ -330,7 +330,7 @@ a.logo {
 
 .heading p {
   color: var(--muted);
-  margin-top: 14px;
+  margin-top: 16px;
   font-size: 1.15rem;
 }
 
@@ -345,7 +345,7 @@ a.logo {
   align-items: center;
   gap: 12px;
   margin-bottom: 24px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 1.5px;
 }
@@ -383,7 +383,8 @@ a.logo {
   backdrop-filter: blur(10px);
 
   border-radius: 20px;
-  transition: 0.35s ease;
+  transition: 0.35s easeout;
+  opacity: 0.7;
   cursor: pointer;
 }
 
@@ -437,7 +438,7 @@ a.logo {
 }
 
 .card p {
-  color: #8f91a0;
+  color: #000;
   line-height: 1.7;
 }
 

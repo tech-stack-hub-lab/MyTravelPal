@@ -9,7 +9,7 @@
         <span class="badge bg-primary rounded-pill">1 / 4</span>
       </div>
 
-      <form method="post">
+      <form method="post" autocomplete="off">
         {% csrf_token %}
         {{ form.as_p }}
         <div class="d-flex justify-content-end mt-4">

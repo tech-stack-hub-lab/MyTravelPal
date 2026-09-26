@@ -1,13 +1,54 @@
 {% extends 'sidebar.html' %}
+{% load tz %}
 
 {% block content %}
 <section class="page-section">
+  
+  <!-- Title & Details Header -->
+<div class="trip-header">
   <div class="page-header">
     <div>
       <h1>{{ trip.trip_name }}</h1>
       <p>{{ trip.destination }} | {{ trip.start_date }} – {{ trip.end_date }}</p>
     </div>
   </div>
+  
+  <!-- Toggle Button for Edit Form -->
+  <button type="button" onclick="document.getElementById('edit-trip-form').style.display='block'" class="btn btn-secondary">
+    Edit Trip Details
+  </button>
+</div>
+
+<!-- Inline Edit Form (Hidden by default) -->
+<div id="edit-trip-form" style="display: none; margin-top: 20px; border: 1px solid #ccc; padding: 15px;">
+  <h3>Edit Trip Details</h3>
+  <form action="{% url 'homepage:trip_detail' trip.id %}" method="POST">
+    {% csrf_token %}
+    
+    <div class="form-group mb-2">
+      <label>Title:</label>
+      <input type="text" name="title" value="{{ trip.title }}" class="form-control" required>
+    </div>
+
+    <div class="form-group mb-2">
+      <label>Destination:</label>
+      <input type="text" name="destination" value="{{ trip.destination }}" class="form-control">
+    </div>
+
+    <div class="form-group mb-2">
+      <label>Start Date:</label>
+      <input type="date" name="start_date" value="{{ trip.start_date|date:'Y-m-d' }}" class="form-control">
+    </div>
+
+    <div class="form-group mb-2">
+      <label>End Date:</label>
+      <input type="date" name="end_date" value="{{ trip.end_date|date:'Y-m-d' }}" class="form-control">
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <button type="button" onclick="document.getElementById('edit-trip-form').style.display='none'" class="btn btn-light">Cancel</button>
+  </form>
+</div>
 
   <div class="details-grid">
     <div class="card">
@@ -42,8 +83,9 @@
         <ul>
           {% for event in trip.events.all %}
             <li>
-  {{ event.title|safe }} | {{ event.start_datetime }} → {{ event.end_datetime }}
+  {{ event.title|safe }} |  {{ event.start_datetime }} → {{ event.end_datetime }}
 </li>
+
           {% endfor %}
         </ul>
       {% else %}
@@ -72,14 +114,7 @@
     <h2>Itinerary & Map</h2>
     <p>View the itinerary and map for <strong>{{ trip.destination }}</strong>.</p>
     <div class="itinerary-embed">
-      <iframe
-        width="100%"
-        height="350"
-        frameborder="0"
-        style="border:0;"
-        src="https://www.google.com/maps?q={{ trip.destination|urlencode }}&output=embed"
-        allowfullscreen>
-      </iframe>
+      
     </div>
   </div>
   <div class="card mt-4">

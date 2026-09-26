@@ -238,3 +238,15 @@ class HotelDetailForm(forms.Form):
         required=False, max_digits=10, decimal_places=2,
         widget=forms.NumberInput(attrs={"class": "form-control", "step": "0.01"}),
     )
+
+
+class TripUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Trip
+        fields = ['title', 'destination', 'start_date', 'end_date']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'destination': forms.TextInput(attrs={'class': 'form-control'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
