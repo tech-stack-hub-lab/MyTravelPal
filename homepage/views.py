@@ -1142,7 +1142,6 @@ def trip_detail(request, trip_id):
         form = TripUpdateForm(request.POST, instance=trip)
         if form.is_valid():
             form.save()
-            # YAHAN UPDATE KAREIN:
             return redirect('homepage:trip_detail', trip_id=trip.id) 
     else:
         form = TripUpdateForm(instance=trip)
@@ -1151,9 +1150,8 @@ def trip_detail(request, trip_id):
     events = trip.events.all() if hasattr(trip, 'events') else []
     flights = trip.flights.all() if hasattr(trip, 'flights') else []
     hotels = trip.hotels.all() if hasattr(trip, 'hotels') else []
-    itinerary = trip.itinerary_items.all() if hasattr(trip, 'itinerary_items') else []
-    uploads = trip.uploads.all() if hasattr(trip, 'uploads') else []  # <-- Add this line (or use related_name)
-
+    # itinerary = trip.itinerary_items.all() if hasattr(trip, 'itinerary_items') else []
+    itinerary = trip.itineraries.order_by('day_number')
     return render(request, 'trip_detail.html', {
         'trip': trip,
         'form': form,
@@ -1161,7 +1159,7 @@ def trip_detail(request, trip_id):
         'flights': flights,
         'hotels': hotels,
         'itinerary': itinerary,
-        'uploads': uploads,
+       
     })
 
 
